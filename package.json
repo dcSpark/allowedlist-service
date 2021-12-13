@@ -1,6 +1,6 @@
 {
-  "name": "pricing-service",
-  "version": "0.0.4",
+  "name": "allowlist-service",
+  "version": "0.0.1",
   "description": "TODO",
   "main": "src/index.ts",
   "scripts": {

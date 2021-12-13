@@ -7,10 +7,10 @@ const semverCompare = require("semver-compare");
 
 import { applyMiddleware, applyRoutes, Route } from "./utils";
 import * as middleware from "./middleware";
+import { default as allowedList } from "./allowedList"
 
 // populated by ConfigWebpackPlugin
 declare const CONFIG: ConfigType;
-declare const ALLOWEDLIST: string[];
 
 /**
  * HTTP API interface
@@ -27,18 +27,18 @@ applyMiddleware(middlewares, router);
 
 const fullAddressList = async (req: Request, res: Response) => {
   res.send({
-    allowedList: ALLOWEDLIST
+    allowedList
   })
 }
 
 const isAddressAllowed = async (req: Request, res: Response) => {
-  if (req.body.address == null || req.body.address.length == 0) {
+  if (req.query.address == null || req.query.address.length == 0) {
     res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
     return;
   }
 
-  const isAllowed = ALLOWEDLIST.indexOf("") > -1;
-
+  const address: string = req.query.address as string;
+  const isAllowed = allowedList.indexOf(address) > -1;
   res.send({
     isAllowed
   });
@@ -63,8 +63,8 @@ router.use(middleware.errorHandler);
 const server = http.createServer(router);
 const port: number = CONFIG.APIGenerated.port;
 
+console.log("isAllowedList: ", allowedList);
+
 server.listen(port, () =>
   console.log(`listening on ${port}...`)
 );
-
-console.log("Starting interval");
