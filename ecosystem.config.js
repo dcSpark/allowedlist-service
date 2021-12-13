@@ -5,15 +5,12 @@ module.exports = {
     instances: "max",
     exec_mode: 'cluster',
     watch: '.',
-    // env: {
-    //   NODE_ENV: "development",
-    // },
-    // // env_production: {
-    // //   NODE_ENV: "production"
-    // // },
-    // bazinga: {
-    //   NODE_ENV: "production",
-    //   // PORT: (process.env.PORT) ? process.env.PORT : 3333
-    // }
+    env: {
+      NODE_ENV: "development",
+    },
+    env_production: {
+      NODE_ENV: "production",
+      DEBUG: "custom:*"
+    }
   }]
 };
