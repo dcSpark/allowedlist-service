@@ -8,11 +8,10 @@
 
 
 ## Purpose of this project
-The purpose of this micro service is to cache price from cryptocompare that can be queried by the cardano-backend service.
+The purpose of this micro service is to provide a list of addresses that are allowed to use the bridge in Milkomeda.
 
 # Requirements
-You will need the API key.  You will need to ask for it.
-
+If you want to add an address you will have the edit the `allowedList.ts` file and restart the service.
 
 ## Building
 
