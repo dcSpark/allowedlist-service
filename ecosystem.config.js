@@ -1,7 +1,7 @@
 module.exports = {
   apps : [{
     name: 'allowlist',
-    script: 'index.js',
+    script: './build/index.js',
     instances: "max",
     watch: '.'
   }]

@@ -7,7 +7,7 @@
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.ts",
     "postinstall": "npm run typecheck",
     "typecheck": "tsc --project tsconfig.typecheck.json",
-    "start": "pm2 start pm2.yaml",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "stop": "pm2 stop pm2.yaml",
     "dev:watch": "NODE_ENV=development webpack",
     "dev:run": "NODE_ENV=development nodemon build/index.js",
