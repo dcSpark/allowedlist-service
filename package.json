@@ -7,7 +7,7 @@
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.ts",
     "postinstall": "npm run typecheck",
     "typecheck": "tsc --project tsconfig.typecheck.json",
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "start": "npm run build && pm2-runtime start ecosystem.config.js --env production",
     "stop": "pm2 stop pm2.yaml",
     "dev:watch": "NODE_ENV=development webpack",
     "dev:run": "NODE_ENV=development nodemon build/index.js",
@@ -28,7 +28,7 @@
     "cors": "^2.8.5",
     "express": "^5.0.0-alpha.8",
     "mocha": "^9.1.1",
-    "pm2": "^5.1.1",
+    "pm2": "^5.1.2",
     "semver-compare": "^1.0.0"
   },
   "devDependencies": {
