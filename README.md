@@ -25,10 +25,16 @@ nvm install
 npm install
 
 # run the server
-npm run dev
+npm run start
 ```
 
 *Never put production credentials into repository!*
+
+Feel free to test it using:
+```sh
+curl  http://localhost:3000/v1/isAddressAllowed?address=addr1qxm9k70p3j54qfgvvhx39rh0kfm6k4lxyfkavks0cm7kklxlmylqk3ksyqnhe8dadcee2a5syrc8a2salkpa3e0sp76symvshl
+```
+Should return `{"isAllowed":true}`
 
 ## Containers
 This will build to a container with the docker file.  The container is using the PM2 runtime.  You will need to pass ENV variables to the container to register with PM2 logging.
