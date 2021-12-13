@@ -1,4 +1,4 @@
-# Cardano-Pricing Service
+# AllowedList Service
 [![Node.js CI](https://github.com/dcSpark/pricing-service/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/dcSpark/pricing-service/actions/workflows/node.js.yml)
 
 
