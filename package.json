@@ -5,14 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.ts",
-    "postinstall": "npm run typecheck",
-    "typecheck": "tsc --project tsconfig.typecheck.json",
     "start": "npm run build && pm2 start ecosystem.config.js --env bazinga",
-    "stop": "pm2 stop ecosystem.config.js",
-    "dev:watch": "NODE_ENV=development webpack",
-    "dev:run": "NODE_ENV=development nodemon build/index.js",
-    "eslint": "eslint src tests",
-    "test": "mocha -r ts-node/register tests/**/*.test.ts --slow 0"
+    "stop": "pm2 stop ecosystem.config.js"
   },
   "author": "",
   "license": "MIT",
