@@ -9,8 +9,7 @@ module.exports = {
       NODE_ENV: "development",
     },
     env_production: {
-      NODE_ENV: "production",
-      DEBUG: "custom:*"
+      NODE_ENV: "production"
     }
   }]
 };

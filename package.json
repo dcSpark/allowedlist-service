@@ -5,16 +5,11 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.ts",
-    "start": "npm run build && node ./build/index.js",
+    "start": "npm run build && pm2-runtime start ecosystem.config.js --env production",
     "stop": "pm2 stop ecosystem.config.js"
   },
   "author": "",
   "license": "MIT",
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run typecheck"
-    }
-  },
   "dependencies": {
     "axios": "^0.21.4",
     "compression": "^1.7.4",
