@@ -4,5 +4,5 @@ module.exports = {
     script: 'index.js',
     instances: "max",
     watch: '.'
-  },
+  }]
 };
