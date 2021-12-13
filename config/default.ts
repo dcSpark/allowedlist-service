@@ -1,5 +1,5 @@
 export default ({ 
     APIGenerated: {
-      port: 8090 
+      port: process.env.PORT || 3000 
     }
   } as ConfigType);
