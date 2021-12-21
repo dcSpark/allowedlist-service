@@ -28,7 +28,7 @@ npm install
 npm run start
 ```
 
-*Never put production credentials into repository!*
+*Never put production credentials into any repository!*
 
 Feel free to test it using:
 ```sh
@@ -41,6 +41,14 @@ This will build to a container with the docker file.  The container is using the
 
 
 ## Tests
+=======
+I had to add 2 env variables to deploy it working on Heroku:
 
+```bash
+heroku config:set NPM_CONFIG_PRODUCTION=false -a allowedlist-service
+heroku config:set USE_NPM_INSTALL=true -a allowedlist-service
+```
 
-## API
+## Containers
+N/A for now
+Do not try to use them!
