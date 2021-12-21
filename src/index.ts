@@ -32,7 +32,9 @@ const fullAddressList = async (req: Request, res: Response) => {
 }
 
 const isAddressAllowed = async (req: Request, res: Response) => {
-  if (req.query.address == null || req.query.address.length == 0) {
+  res.send({ isAllowed: true });
+  return;
+  /* if (req.query.address == null || req.query.address.length == 0) {
     res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
     return;
   }
@@ -42,7 +44,7 @@ const isAddressAllowed = async (req: Request, res: Response) => {
   res.send({
     isAllowed
   });
-  return;
+  return;*/
 }
 
 const routes: Route[] = [{ 
