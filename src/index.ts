@@ -32,19 +32,21 @@ const fullAddressList = async (req: Request, res: Response) => {
 }
 
 const isAddressAllowed = async (req: Request, res: Response) => {
-  res.send({ isAllowed: true });
-  return;
-  /* if (req.query.address == null || req.query.address.length == 0) {
-    res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
-    return;
+  // TODO: Update config so node parses this env variable as a Boolean
+  if (CONFIG.APIGenerated.enforceWhitelist === "TRUE") {
+    if (req.query.address == null || req.query.address.length == 0) {
+      res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
+      return;
+    }
+  
+    const address: string = req.query.address as string;
+    const isAllowed = allowedList.indexOf(address) > -1;
+    res.send({
+      isAllowed
+    });
+  } else {
+    res.send({ isAllowed: true });
   }
-
-  const address: string = req.query.address as string;
-  const isAllowed = allowedList.indexOf(address) > -1;
-  res.send({
-    isAllowed
-  });
-  return;*/
 }
 
 const routes: Route[] = [{ 
@@ -65,7 +67,7 @@ router.use(middleware.errorHandler);
 const server = http.createServer(router);
 const port: number = CONFIG.APIGenerated.port;
 
-console.log("isAllowedList: ", allowedList);
+console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
 
 server.listen(port, () =>
   console.log(`listening on ${port}...`)

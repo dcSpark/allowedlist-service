@@ -1,6 +1,7 @@
 interface ConfigType {
   APIGenerated: {
-    port: number
+    port: number,
+    enforceWhitelist: string,
   },
 }
 
