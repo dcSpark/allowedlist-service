@@ -49,6 +49,26 @@ const isAddressAllowed = async (req: Request, res: Response) => {
   }
 }
 
+const stargate = async (req: Request, res: Response) => {
+  // TODO: Update config so node parses this env variable as a Boolean
+  if (CONFIG.APIGenerated.mainnet === "TRUE") {
+      res.send({
+        // TODO: dynamic Milkomeda address from server
+        current_address: 'mainnet_address_here', // TODO: no mainnet address for now
+        ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
+        assets: [],
+      });
+      return;
+  } else {
+    res.send({
+      // TODO: dynamic Milkomeda address from server
+      current_address: 'addr_test1wz6lvjg3anml96vl22mls5vae3x2cgaqwy2ewp5gj3fcxdcw652wz',
+      ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
+      assets: [],
+    });
+  }
+}
+
 const routes: Route[] = [{ 
     path: "/v1/isAddressAllowed",
     method: "get",
@@ -57,6 +77,10 @@ const routes: Route[] = [{
     path: "/v1/fullAllowedList",
     method: "get",
     handler: fullAddressList
+  }, {
+    path: "/v1/stargate",
+    method: "get",
+    handler: stargate
   },
 ];
 
@@ -67,6 +91,7 @@ router.use(middleware.errorHandler);
 const server = http.createServer(router);
 const port: number = CONFIG.APIGenerated.port;
 
+console.log("mainnet: ", CONFIG.APIGenerated.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
 
 server.listen(port, () =>

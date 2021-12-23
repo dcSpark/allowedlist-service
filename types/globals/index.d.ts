@@ -2,6 +2,7 @@ interface ConfigType {
   APIGenerated: {
     port: number,
     enforceWhitelist: string,
+    mainnet: string,
   },
 }
 
