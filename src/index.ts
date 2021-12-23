@@ -51,7 +51,7 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 
 const stargate = async (req: Request, res: Response) => {
   // TODO: Update config so node parses this env variable as a Boolean
-  if (CONFIG.APIGenerated.enforceWhitelist === "TRUE") {
+  if (CONFIG.APIGenerated.mainnet === "TRUE") {
       res.send({
         // TODO: dynamic Milkomeda address from server
         current_address: 'mainnet_address_here', // TODO: no mainnet address for now
@@ -91,6 +91,7 @@ router.use(middleware.errorHandler);
 const server = http.createServer(router);
 const port: number = CONFIG.APIGenerated.port;
 
+console.log("mainnet: ", CONFIG.APIGenerated.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
 
 server.listen(port, () =>
