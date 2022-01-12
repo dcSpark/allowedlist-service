@@ -8,6 +8,7 @@ const semverCompare = require("semver-compare");
 import { applyMiddleware, applyRoutes, Route } from "./utils";
 import * as middleware from "./middleware";
 import { default as allowedList } from "./allowedList"
+import { contract } from "./contract";
 
 // populated by ConfigWebpackPlugin
 declare const CONFIG: ConfigType;
@@ -25,11 +26,14 @@ const middlewares = [middleware.handleCors
 
 applyMiddleware(middlewares, router);
 
-const fullAddressList = async (req: Request, res: Response) => {
-  res.send({
-    allowedList
-  })
-}
+const fullAddressList = async (req: Request, res: Response): Promise<void> => {
+  const allowList = await contract.getAccountsList();
+  if (allowList instanceof Error) {
+    res.status(400).send({ allowList });
+    return;
+  }
+  res.status(200).send({ allowList });
+};
 
 const isAddressAllowed = async (req: Request, res: Response) => {
   // TODO: Update config so node parses this env variable as a Boolean
