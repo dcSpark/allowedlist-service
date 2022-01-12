@@ -1,6 +1,6 @@
 export default {
   sidechain: {
-    nodeUrl: process.env.CONTRACT_HOST || "http://10.48.2.190:8545",
+    nodeUrl: process.env.CONTRACT_HOST || "http://localhost:8545",
     address: process.env.CONTRACT_ADDRESS || "0x0000000000000000000000000000000000008888",
     accountIngress: "./contract/AccountIngress.json",
     accountRulesList: "./contract/AccountRulesList.json",
