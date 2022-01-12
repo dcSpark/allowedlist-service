@@ -1,7 +1,10 @@
 export default {
-  contract: {
-    nodeUrl: process.env.CONTRACT_HOST || "http://localhost:8545",
-    chainId: process.env.CHAIN_ID || "1000"
+  sidechain: {
+    nodeUrl: process.env.CONTRACT_HOST || "http://10.48.2.190:8545",
+    address: process.env.CONTRACT_ADDRESS || "0x0000000000000000000000000000000000008888",
+    accountIngress: "./contract/AccountIngress.json",
+    accountRulesList: "./contract/AccountRulesList.json",
+    
   },
   APIGenerated: {
     port: process.env.PORT || 3000,

@@ -1,7 +1,9 @@
 interface ConfigType {
-  contract: {
+  sidechain: {
     nodeUrl: string,
-    chainId: string,
+    address: string,
+    accountIngress: string,
+    accountRulesList: string,
   },
   APIGenerated: {
     port: number,

@@ -98,6 +98,11 @@ const port: number = CONFIG.APIGenerated.port;
 console.log("mainnet: ", CONFIG.APIGenerated.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
 
-server.listen(port, () =>
-  console.log(`listening on ${port}...`)
-);
+contract.initializeContract()
+.then(_ => {
+  server.listen(port, () =>
+    console.log(`listening on ${port}...`)
+  );
+  console.log("Contract connection initialized")
+})
+.catch(e => console.error(`There was problem with connecting to the sidechain contract.${e}`));
