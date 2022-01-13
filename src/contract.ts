@@ -5,19 +5,18 @@ import type { AbiItem } from "web3-utils";
 import { isAddress } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 import path from "path";
-import { AccountIngress } from "../types/@types/AccountIngress"; 
   
 declare const CONFIG: ConfigType;
 
 export class AllowedListContract {
     web3: Web3;
-    ingressContract: AccountIngress;
+    ingressContract: Contract;
     allowedListContract!: Contract; // it can be undefined at first, cause if constructor fails it will never be initialized
 
     constructor() {
         this.web3 = new Web3(CONFIG.sidechain.nodeUrl);
         const accountIngress = JSON.parse(fs.readFileSync(path.resolve(__dirname, CONFIG.sidechain.accountIngress), "utf-8"));
-        this.ingressContract = new this.web3.eth.Contract(accountIngress["abi"] as AbiItem[], CONFIG.sidechain.address) as unknown as AccountIngress;
+        this.ingressContract = new this.web3.eth.Contract(accountIngress["abi"] as AbiItem[], CONFIG.sidechain.accountIngressAddress);
     }
 
     public async initializeContract(): Promise<AllowedListContract> {
