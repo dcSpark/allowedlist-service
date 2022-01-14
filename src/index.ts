@@ -54,7 +54,7 @@ const stargate = async (req: Request, res: Response) => {
   if (CONFIG.APIGenerated.mainnet === "TRUE") {
       res.send({
         // TODO: dynamic Milkomeda address from server
-        current_address: 'mainnet_address_here', // TODO: no mainnet address for now
+        current_address: 'addr1w8pydstdswmdqmg2rdt59dzql3zgfp9pt8sulnjgalycwdsj9js7w',
         ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
         assets: [],
       });
