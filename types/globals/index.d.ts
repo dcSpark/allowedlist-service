@@ -1,4 +1,10 @@
 interface ConfigType {
+  sidechain: {
+    nodeUrl: string,
+    accountIngressAddress: string,
+    accountIngress: string,
+    accountRulesList: string,
+  },
   APIGenerated: {
     port: number,
     enforceWhitelist: string,
@@ -6,10 +12,4 @@ interface ConfigType {
   },
 }
 
-declare global {
-    namespace NodeJS {
-      interface Global {
-        ALLOWEDLIST: strign[];
-      }
-    }
-  }
+declare module "copy-webpack-plugin";

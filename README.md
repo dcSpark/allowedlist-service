@@ -36,8 +36,19 @@ curl  http://localhost:3000/v1/isAddressAllowed?address=addr1qxm9k70p3j54qfgvvhx
 ```
 Should return `{"isAllowed":true}`
 
+```sh
+curl  http://localhost:3000/v1/fullAllowedList
+```
+Should return `{ allowedList: [ "address1", "address2", ... ] }`
+
 ## Containers
 This will build to a container with the docker file.  The container is using the PM2 runtime.  You will need to pass ENV variables to the container to register with PM2 logging.
+
+## Testing api based on contract
+To test the `fullAllowedList` endpoint, you need to set appropriate url for the node inside configuration file.
+```bash
+nodeUrl: process.env.CONTRACT_HOST || "http://localhost:8545",
+```
 
 
 ## Tests
