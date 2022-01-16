@@ -7,7 +7,7 @@ const semverCompare = require("semver-compare");
 
 import { applyMiddleware, applyRoutes, Route } from "./utils";
 import * as middleware from "./middleware";
-import { contract } from "./contract";
+import { default as allowedList } from "./allowedList"
 
 // populated by ConfigWebpackPlugin
 declare const CONFIG: ConfigType;
@@ -25,14 +25,11 @@ const middlewares = [middleware.handleCors
 
 applyMiddleware(middlewares, router);
 
-const fullAddressList = async (req: Request, res: Response): Promise<void> => {
-  const allowList = await contract.getAccountsList();
-  if (allowList instanceof Error) {
-    res.status(400).send({ error: allowList });
-    return;
-  }
-  res.status(200).send({ allowList });
-};
+const fullAddressList = async (req: Request, res: Response) => {
+  res.send({
+    allowedList
+  })
+}
 
 const isAddressAllowed = async (req: Request, res: Response) => {
   // TODO: Update config so node parses this env variable as a Boolean
@@ -41,13 +38,9 @@ const isAddressAllowed = async (req: Request, res: Response) => {
       res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
       return;
     }
-    const validAddresses = await contract.getAccountsList();
-    if (validAddresses instanceof Error) {
-      res.status(400).send({ error: `Couldn't get list of addresses to compare. ${validAddresses.message}`})
-      return
-    }
+  
     const address: string = req.query.address as string;
-    const isAllowed = validAddresses.indexOf(address) > -1;
+    const isAllowed = allowedList.indexOf(address) > -1;
     res.send({
       isAllowed
     });
@@ -101,11 +94,6 @@ const port: number = CONFIG.APIGenerated.port;
 console.log("mainnet: ", CONFIG.APIGenerated.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
 
-contract.initializeContract()
-.then(_ => {
-  server.listen(port, () =>
-    console.log(`listening on ${port}...`)
-  );
-  console.log("Contract connection initialized")
-})
-.catch(e => console.error(`There was problem with connecting to the sidechain contract.${e}`));
+server.listen(port, () =>
+  console.log(`listening on ${port}...`)
+);
