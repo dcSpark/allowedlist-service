@@ -25,11 +25,14 @@ const middlewares = [middleware.handleCors
 
 applyMiddleware(middlewares, router);
 
-const fullAddressList = async (req: Request, res: Response) => {
-  res.send({
-    allowedList
-  })
-}
+const fullAddressList = async (req: Request, res: Response): Promise<void> => {
+  const allowList = await contract.getAccountsList();
+  if (allowList instanceof Error) {
+    res.status(400).send({ error: allowList.message });
+    return;
+  }
+  res.status(200).send({ allowList });
+};
 
 const isAddressAllowed = async (req: Request, res: Response) => {
   // TODO: Update config so node parses this env variable as a Boolean
@@ -94,6 +97,13 @@ const port: number = CONFIG.APIGenerated.port;
 console.log("mainnet: ", CONFIG.APIGenerated.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
 
-server.listen(port, () =>
-  console.log(`listening on ${port}...`)
-);
+contract.initializeContract()
+.then(_ => {
+  console.log("Contract connection initialized")
+})
+.catch(e => console.error(`There was problem with connecting to the sidechain contract.${e}`))
+.finally(() => {
+  server.listen(port, () =>
+    console.log(`listening on ${port}...`)
+  );
+});
