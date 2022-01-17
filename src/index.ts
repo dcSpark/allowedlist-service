@@ -36,7 +36,7 @@ const fullAddressList = async (req: Request, res: Response): Promise<void> => {
 
 const isAddressAllowed = async (req: Request, res: Response) => {
   // TODO: Update config so node parses this env variable as a Boolean
-  if (CONFIG.APIGenerated.enforceWhitelist === "TRUE") {
+  if (CONFIG.API.enforceWhitelist === "TRUE") {
     if (req.query.address == null || req.query.address.length == 0) {
       res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
       return;
@@ -57,23 +57,22 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 }
 
 const stargate = async (req: Request, res: Response) => {
-  const mainnetStargateAddress = await contract.getStargateAddress();
-  if (mainnetStargateAddress instanceof Error) {
-    res.status(400).send({ error: `Couldn't get stargate address. ${mainnetStargateAddress.message}`})
+  const stargateAddress = await contract.getStargateAddress();
+  if (stargateAddress instanceof Error) {
+    res.status(400).send({ error: `Couldn't get stargate address. ${stargateAddress.message}`})
     return;
   }
   // TODO: Update config so node parses this env variable as a Boolean
-  if (CONFIG.APIGenerated.mainnet === "TRUE") {
+  if (CONFIG.API.mainnet === "TRUE") {
       res.send({
-        current_address: mainnetStargateAddress,
+        current_address: stargateAddress,
         ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
         assets: [],
       });
       return;
   } else {
     res.send({
-      // TODO: dynamic Milkomeda address from contract
-      current_address: 'addr_test1wz6lvjg3anml96vl22mls5vae3x2cgaqwy2ewp5gj3fcxdcw652wz',
+      current_address: stargateAddress,
       ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
       assets: [],
     });
@@ -100,17 +99,15 @@ router.use(middleware.logErrors);
 router.use(middleware.errorHandler);
 
 const server = http.createServer(router);
-const port: number = CONFIG.APIGenerated.port;
+const port: number = CONFIG.API.port;
 
-console.log("mainnet: ", CONFIG.APIGenerated.mainnet);
-console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
+console.log("mainnet: ", CONFIG.API.mainnet);
+console.log("isAllowedList enforced: ", CONFIG.API.enforceWhitelist);
 
 contract.initializeContract()
-.then(_ => {
-  console.log("Contract connection initialized")
-})
+.then(_ => console.log("Contract connection initialized"))
 .catch(e => console.error(`There was problem with connecting to the sidechain contract.${e}`))
-.finally(() => {
+.finally(() => { // always start REST API
   server.listen(port, () =>
     console.log(`listening on ${port}...`)
   );

@@ -6,8 +6,9 @@ interface ConfigType {
     accountRulesList: string,
     bridgeProxyContract: string,
     bridgeLogicContract: string,
+    chainId: number,
   },
-  APIGenerated: {
+  API: {
     port: number,
     enforceWhitelist: string,
     mainnet: string,
