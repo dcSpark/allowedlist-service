@@ -52,7 +52,7 @@ The default configuration of `sidechain` section consists of values which should
 Values can be also set using `environmental` variables such as:
  * `CONTRACT_HOST` - url to Besu node e.g. `http://localhost:8545`
  * `ALLOW_LIST_CONTRACT_ADDRESS` - address of the allowlist contract deployed on the besu node in the sidechain
- * `BRIDGE_CONTRACT_CHAIN_ID` - bridge contract has different chainId depending on the environment. For localnet it's `1000` and for `mainnet` it's `2001`
+ * `BRIDGE_CONTRACT_CHAIN_ID` - bridge contract has different chainId depending on the environment. For localnet it's `200101` and for `mainnet` it's `2001`
 
 # Contracts
 Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
