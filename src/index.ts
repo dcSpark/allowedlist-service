@@ -7,7 +7,7 @@ const semverCompare = require("semver-compare");
 
 import { applyMiddleware, applyRoutes, Route } from "./utils";
 import * as middleware from "./middleware";
-import { default as allowedList } from "./allowedList"
+import { contract } from "./contract";
 
 // populated by ConfigWebpackPlugin
 declare const CONFIG: ConfigType;
@@ -41,9 +41,13 @@ const isAddressAllowed = async (req: Request, res: Response) => {
       res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
       return;
     }
-  
+    const validAddresses = await contract.getAccountsList();
+    if (validAddresses instanceof Error) {
+      res.status(400).send({ error: `Couldn't get list of addresses to compare. ${validAddresses.message}`})
+      return;
+    }
     const address: string = req.query.address as string;
-    const isAllowed = allowedList.indexOf(address) > -1;
+    const isAllowed = validAddresses.indexOf(address) > -1;
     res.send({
       isAllowed
     });
@@ -53,18 +57,22 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 }
 
 const stargate = async (req: Request, res: Response) => {
+  const mainnetStargateAddress = await contract.getStargateAddress();
+  if (mainnetStargateAddress instanceof Error) {
+    res.status(400).send({ error: `Couldn't get stargate address. ${mainnetStargateAddress.message}`})
+    return;
+  }
   // TODO: Update config so node parses this env variable as a Boolean
   if (CONFIG.APIGenerated.mainnet === "TRUE") {
       res.send({
-        // TODO: dynamic Milkomeda address from server
-        current_address: 'addr1w8pydstdswmdqmg2rdt59dzql3zgfp9pt8sulnjgalycwdsj9js7w',
+        current_address: mainnetStargateAddress,
         ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
         assets: [],
       });
       return;
   } else {
     res.send({
-      // TODO: dynamic Milkomeda address from server
+      // TODO: dynamic Milkomeda address from contract
       current_address: 'addr_test1wz6lvjg3anml96vl22mls5vae3x2cgaqwy2ewp5gj3fcxdcw652wz',
       ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
       assets: [],
