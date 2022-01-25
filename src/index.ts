@@ -7,7 +7,7 @@ const semverCompare = require("semver-compare");
 
 import { applyMiddleware, applyRoutes, Route } from "./utils";
 import * as middleware from "./middleware";
-import { default as allowedList } from "./allowedList"
+import { contract } from "./contract";
 
 // populated by ConfigWebpackPlugin
 declare const CONFIG: ConfigType;
@@ -25,22 +25,29 @@ const middlewares = [middleware.handleCors
 
 applyMiddleware(middlewares, router);
 
-const fullAddressList = async (req: Request, res: Response) => {
-  res.send({
-    allowedList
-  })
-}
+const fullAddressList = async (req: Request, res: Response): Promise<void> => {
+  const allowList = await contract.getAccountsList();
+  if (allowList instanceof Error) {
+    res.status(400).send({ error: allowList.message });
+    return;
+  }
+  res.status(200).send({ allowList });
+};
 
 const isAddressAllowed = async (req: Request, res: Response) => {
   // TODO: Update config so node parses this env variable as a Boolean
-  if (CONFIG.APIGenerated.enforceWhitelist === "TRUE") {
+  if (CONFIG.API.enforceWhitelist === "TRUE") {
     if (req.query.address == null || req.query.address.length == 0) {
       res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
       return;
     }
-  
+    const validAddresses = await contract.getAccountsList();
+    if (validAddresses instanceof Error) {
+      res.status(400).send({ error: `Couldn't get list of addresses to compare. ${validAddresses.message}`})
+      return;
+    }
     const address: string = req.query.address as string;
-    const isAllowed = allowedList.indexOf(address) > -1;
+    const isAllowed = validAddresses.indexOf(address) > -1;
     res.send({
       isAllowed
     });
@@ -50,19 +57,22 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 }
 
 const stargate = async (req: Request, res: Response) => {
+  const stargateAddress = await contract.getStargateAddress();
+  if (stargateAddress instanceof Error) {
+    res.status(400).send({ error: `Couldn't get stargate address. ${stargateAddress.message}`})
+    return;
+  }
   // TODO: Update config so node parses this env variable as a Boolean
-  if (CONFIG.APIGenerated.mainnet === "TRUE") {
+  if (CONFIG.API.mainnet === "TRUE") {
       res.send({
-        // TODO: dynamic Milkomeda address from server
-        current_address: 'addr1w8pydstdswmdqmg2rdt59dzql3zgfp9pt8sulnjgalycwdsj9js7w',
+        current_address: stargateAddress,
         ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
         assets: [],
       });
       return;
   } else {
     res.send({
-      // TODO: dynamic Milkomeda address from server
-      current_address: 'addr_test1wz6lvjg3anml96vl22mls5vae3x2cgaqwy2ewp5gj3fcxdcw652wz',
+      current_address: stargateAddress,
       ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
       assets: [],
     });
@@ -89,11 +99,16 @@ router.use(middleware.logErrors);
 router.use(middleware.errorHandler);
 
 const server = http.createServer(router);
-const port: number = CONFIG.APIGenerated.port;
+const port: number = CONFIG.API.port;
 
-console.log("mainnet: ", CONFIG.APIGenerated.mainnet);
-console.log("isAllowedList enforced: ", CONFIG.APIGenerated.enforceWhitelist);
+console.log("mainnet: ", CONFIG.API.mainnet);
+console.log("isAllowedList enforced: ", CONFIG.API.enforceWhitelist);
 
-server.listen(port, () =>
-  console.log(`listening on ${port}...`)
-);
+contract.initializeContract()
+.then(_ => console.log("Contract connection initialized"))
+.catch(e => console.error(`There was problem with connecting to the sidechain contract.${e}`))
+.finally(() => { // always start REST API
+  server.listen(port, () =>
+    console.log(`listening on ${port}...`)
+  );
+});

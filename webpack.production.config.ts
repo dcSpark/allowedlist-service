@@ -2,7 +2,7 @@ import typescriptIsTransformer from "typescript-is/lib/transform-inline/transfor
 import config from "config";
 import webpack from "webpack";
 import path from "path";
-import WebpackShellPluginNext from "webpack-shell-plugin-next";
+import CopyPlugin from "copy-webpack-plugin";
 
 const {
   NODE_ENV = "production",
@@ -18,10 +18,21 @@ module.exports = {
     filename: "index.js"
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".js", ".json"],
   },
   plugins: [
-    new webpack.DefinePlugin({ CONFIG: JSON.stringify(config) })
+    new webpack.DefinePlugin({ CONFIG: JSON.stringify(config) }),
+    new webpack.IgnorePlugin({
+        resourceRegExp: /^electron$/,
+    }),
+    new CopyPlugin({
+      patterns: [
+          { 
+            from: path.resolve(__dirname, "contract"), 
+            to: path.resolve(__dirname, "build/contract"), 
+          },
+      ],
+    }),
   ],
   module: {
       rules: [
