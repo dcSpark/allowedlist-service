@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.ts",
-    "start": "npm run build && pm2-runtime start ecosystem.config.js --env production",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "stop": "pm2 stop ecosystem.config.js"
   },
   "author": "",
