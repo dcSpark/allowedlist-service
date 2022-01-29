@@ -7,7 +7,8 @@
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.ts",
     "dev:watch": "NODE_ENV=development webpack",
     "dev:run": "NODE_ENV=development nodemon build/index.js",
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "start": "NODE_ENV=development nodemon build/index.js",    
+    "start-pm2": "pm2-runtime start ecosystem.config.js --env production",
     "stop": "pm2 stop ecosystem.config.js"
   },
   "author": "",
