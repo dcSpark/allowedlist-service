@@ -19,7 +19,7 @@ declare const CONFIG: ConfigType;
 const router = express();
 
 const middlewares = [middleware.handleCors
-  , middleware.handleBodyRequestParsing
+  , middleware.handleBodyRequestParsing 
   , middleware.handleCompression
 ];
 
@@ -38,12 +38,12 @@ const isAddressAllowed = async (req: Request, res: Response) => {
   // TODO: Update config so node parses this env variable as a Boolean
   if (CONFIG.API.enforceWhitelist === "TRUE") {
     if (req.query.address == null || req.query.address.length == 0) {
-      res.send({ "error": "Address not found. Please make sure that an address (string) is part of the request." });
+      res.send({"error": "Address not found. Please make sure that an address (string) is part of the request."});
       return;
     }
     const validAddresses = await contract.getAccountsList();
     if (validAddresses instanceof Error) {
-      res.status(400).send({ error: `Couldn't get list of addresses to compare. ${validAddresses.message}` })
+      res.status(400).send({ error: `Couldn't get list of addresses to compare. ${validAddresses.message}`})
       return;
     }
     const address: string = req.query.address as string;
@@ -59,17 +59,17 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 const stargate = async (req: Request, res: Response) => {
   const stargateAddress = await contract.getStargateAddress();
   if (stargateAddress instanceof Error) {
-    res.status(400).send({ error: `Couldn't get stargate address. ${stargateAddress.message}` })
+    res.status(400).send({ error: `Couldn't get stargate address. ${stargateAddress.message}`})
     return;
   }
   // TODO: Update config so node parses this env variable as a Boolean
   if (CONFIG.API.mainnet === "TRUE") {
-    res.send({
-      current_address: stargateAddress,
-      ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
-      assets: [],
-    });
-    return;
+      res.send({
+        current_address: stargateAddress,
+        ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
+        assets: [],
+      });
+      return;
   } else {
     res.send({
       current_address: stargateAddress,
@@ -79,19 +79,19 @@ const stargate = async (req: Request, res: Response) => {
   }
 }
 
-const routes: Route[] = [{
-  path: "/v1/isAddressAllowed",
-  method: "get",
-  handler: isAddressAllowed
-}, {
-  path: "/v1/fullAllowedList",
-  method: "get",
-  handler: fullAddressList
-}, {
-  path: "/v1/stargate",
-  method: "get",
-  handler: stargate
-},
+const routes: Route[] = [{ 
+    path: "/v1/isAddressAllowed",
+    method: "get",
+    handler: isAddressAllowed 
+  }, {
+    path: "/v1/fullAllowedList",
+    method: "get",
+    handler: fullAddressList
+  }, {
+    path: "/v1/stargate",
+    method: "get",
+    handler: stargate
+  },
 ];
 
 applyRoutes(routes, router);
@@ -105,9 +105,10 @@ console.log("mainnet: ", CONFIG.API.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.API.enforceWhitelist);
 
 contract.initializeContract()
-  .then(_ => console.log("Contract connection initialized"))
-  .catch(e => console.error(`There was problem with connecting to the sidechain contract.${e}`))
-
-server.listen(port, () =>
-  console.log(`listening on ${port}...`)
-);
+.then(_ => console.log("Contract connection initialized"))
+.catch(e => console.error(`There was problem with connecting to the sidechain contract.${e}`))
+.finally(() => { // always start REST API
+  server.listen(port, () =>
+    console.log(`listening on ${port}...`)
+  );
+});
