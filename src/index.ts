@@ -99,7 +99,7 @@ router.use(middleware.logErrors);
 router.use(middleware.errorHandler);
 
 const server = http.createServer(router);
-const port: number = CONFIG.API.port;
+const port: number | string = process.env.PORT || CONFIG.API.port;
 
 console.log("mainnet: ", CONFIG.API.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.API.enforceWhitelist);
