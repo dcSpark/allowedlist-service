@@ -2,22 +2,15 @@ import assert from "assert";
 import fs from "fs";
 import Web3 from "web3";
 import type { AbiItem } from "web3-utils";
-import { isAddress, fromWei } from "web3-utils";
+import { isAddress, fromWei, isHexStrict } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 import path from "path";
 
 declare const CONFIG: ConfigType;
 
 type AssetDetails = {
-  assetId: string;
-  details: Details;
-};
-
-type Details = {
-  tokenType: string;
-  tokenContract: string;
-  tokenId: string;
-  minimumValue: string;
+  id: string;
+  min: string;
 };
 export class AllowedListContract {
   web3!: Web3;
@@ -110,54 +103,31 @@ export class AllowedListContract {
   public getAssetIds = async (): Promise<string[] | Error> => {
     return await this.bridgeContract.methods.getAssetIds().call();
   };
-
-  public getAssetsDetails = async (): Promise<AssetDetails[] | Error> => {
+  
+  public getTokenRegistryAllowedList = async (): Promise<AssetDetails[] | Error> => {
     // no filtering for now
     const assets = await this.getAssetIds();
     if (assets instanceof Error) return assets;
-
+  
     let assetsDetails: AssetDetails[] = [];
-    for (const id of assets) {
+    for (let id of assets) {
       try {
-        const details = await this.bridgeContract.methods
-          .tokenRegistry(id)
-          .call();
+        const details = await this.bridgeContract.methods.tokenRegistry(id).call();
+  
         if (details instanceof Error) return details;
-
+  
+        id = isHexStrict(id) ? id.substring(2) : id; // if 0x is there, then remove it
         assetsDetails.push({
-          assetId: id,
-          details: {
-            tokenContract: details.tokenContract,
-            tokenId: details.tokenId,
-            tokenType: details.tokenType,
-            minimumValue: fromWei(details.minimumValue),
-          },
+          id: id,
+          min: fromWei(details.minimumValue),
         });
       } catch (e) {
         console.error(e);
-        // log error & proceed so service is not stopped
       }
     }
-
+  
     return assetsDetails;
   };
 
-  public getTokenRegistryAllowedList = async (): Promise<
-    { id: string; min: string }[] | Error
-  > => {
-    const assetsList = await this.getAssetsDetails();
-    if (assetsList instanceof Error) return assetsList;
-
-    let assets = [];
-    if (assetsList.length) {
-      for (let asset of assetsList) {
-        assets.push({
-          id: asset.assetId,
-          min: asset.details.minimumValue,
-        });
-      }
-    }
-    return assets;
-  };
 }
 export const contract = new AllowedListContract();
