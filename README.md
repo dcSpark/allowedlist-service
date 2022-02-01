@@ -96,18 +96,12 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 {
     "current_address": "addr1...",
     "ttl_expiry": 123,
-    "assets": []
-}
-```
-</details>
-
-<details>
-    <summary>/v1/assets</summary>
-    Returns list of allowed assets.
-```json
-{
-    "id": "asset fingerprint",
-    "min": "123"
+    "assets": [
+        {
+            "id": "asset fingerprint",
+            "min": "123"
+        },
+    ]
 }
 ```
 </details>
