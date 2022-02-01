@@ -96,7 +96,12 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 {
     "current_address": "addr1...",
     "ttl_expiry": 123,
-    "assets": []
+    "assets": [
+        {
+            "id": "asset fingerprint",
+            "min": "123"
+        },
+    ]
 }
 ```
 </details>
