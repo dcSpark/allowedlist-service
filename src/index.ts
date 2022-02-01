@@ -66,12 +66,13 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 
 const stargate = async (req: Request, res: Response) => {
   const stargateAddress = await contract.getStargateAddress();
+  const tokenRegistry = await contract.getTokenRegistryAllowedList();
   if (stargateAddress instanceof Error) {
-    res
-      .status(400)
-      .send({
-        error: `Couldn't get stargate address. ${stargateAddress.message}`,
-      });
+    res.status(400).send({ error: `Couldn't get stargate address. ${stargateAddress.message}` });
+    return;
+  }
+  if (tokenRegistry instanceof Error) {
+    res.status(400).send({ error: `Couldn't get assets. ${tokenRegistry.message}` });
     return;
   }
   // TODO: Update config so node parses this env variable as a Boolean
@@ -79,30 +80,16 @@ const stargate = async (req: Request, res: Response) => {
     res.send({
       current_address: stargateAddress,
       ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
-      assets: [],
+      assets: tokenRegistry,
     });
     return;
   } else {
     res.send({
       current_address: stargateAddress,
       ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
-      assets: [],
+      assets: tokenRegistry,
     });
   }
-};
-
-const tokensRegistry = async (req: Request, res: Response) => {
-  const tokenRegistry = await contract.getTokenRegistryAllowedList();
-  if (tokenRegistry instanceof Error) {
-    res
-      .status(400)
-      .send({
-        error: `Couldn't get stargate address. ${tokenRegistry.message}`,
-      });
-    return;
-  }
-  res.send(tokenRegistry);
-  return;
 };
 
 const routes: Route[] = [
@@ -120,11 +107,6 @@ const routes: Route[] = [
     path: "/v1/stargate",
     method: "get",
     handler: stargate,
-  },
-  {
-    path: "/v1/assets",
-    method: "get",
-    handler: tokensRegistry,
   },
 ];
 
