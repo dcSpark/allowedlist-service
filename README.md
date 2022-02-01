@@ -100,3 +100,14 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 }
 ```
 </details>
+
+<details>
+    <summary>/v1/assets</summary>
+    Returns list of allowed assets.
+```json
+{
+    "id": "asset fingerprint",
+    "min": "123"
+}
+```
+</details>
