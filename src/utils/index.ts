@@ -1,12 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
-import BN from "bn.js";
-import { fromWei, isHexStrict, toBN } from "web3-utils";
 
 export const contentTypeHeaders = { headers: { "Content-Type": "application/json" } };
 
 export const errMsgs = { noValue: "no value" };
-
-export const LOVELACES = 1000000;
 
 type Wrapper = (router: Router) => void;
 
@@ -17,6 +13,7 @@ export const applyMiddleware = (middlewareWrappers: Wrapper[], router: Router) =
 };
 
 export const HEX_REGEXP = RegExp("^[0-9a-fA-F]+$");
+export const WMAIN_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export interface Dictionary<T> {
     [key: string]: T;

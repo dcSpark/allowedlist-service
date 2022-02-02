@@ -5,6 +5,7 @@ import type { AbiItem } from "web3-utils";
 import { isAddress, fromWei, stripHexPrefix } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 import path from "path";
+import { WMAIN_ID } from "./utils";
 
 declare const CONFIG: ConfigType;
 
@@ -86,10 +87,15 @@ export class AllowedListContract {
 
                 if (details instanceof Error) return details;
 
+                let minValue = fromWei(details.minimumValue);
+                if (id === WMAIN_ID) {
+                    // conversion to Lovelaces should appear only for WADA
+                    minValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
+                }
+
                 assetsDetails.push({
                     id: stripHexPrefix(id), // if 0x is there, then remove it
-                    min: fromWei(details.minimumValue, "microether"), // gives back microether = lovelace (for main asset),
-                    // TODO: this will affect also other tokens/assets, but is this correct for them?
+                    min: minValue, 
                 });
             } catch (e) {
                 console.error(e);
