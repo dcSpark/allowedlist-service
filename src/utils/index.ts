@@ -55,15 +55,3 @@ export function scanInteger(x: any, strict = false): Nullable<number> {
             return null;
     }
 }
-
-export const toLovelaces = (value: string): string | Error => {
-    try {
-        return new BN(fromWei(value)).mul(new BN(LOVELACES)).toString();
-    } catch (e) {
-        const err = e as Error;
-        console.log(err.message);
-        return err;
-    }
-}
-
-export const remove0x = (value: string) => isHexStrict(value) ? value.substring(2) : value;
