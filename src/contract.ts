@@ -2,7 +2,7 @@ import assert from "assert";
 import fs from "fs";
 import Web3 from "web3";
 import type { AbiItem } from "web3-utils";
-import { isAddress, fromWei, isHexStrict } from "web3-utils";
+import { isAddress, fromWei, stripHexPrefix } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 import path from "path";
 
@@ -103,29 +103,30 @@ export class AllowedListContract {
   public getAssetIds = async (): Promise<string[] | Error> => {
     return await this.bridgeContract.methods.getAssetIds().call();
   };
-  
+
   public getTokenRegistryAllowedList = async (): Promise<AssetDetails[] | Error> => {
     // no filtering for now
     const assets = await this.getAssetIds();
     if (assets instanceof Error) return assets;
-  
+
     let assetsDetails: AssetDetails[] = [];
     for (let id of assets) {
       try {
         const details = await this.bridgeContract.methods.tokenRegistry(id).call();
-  
+
         if (details instanceof Error) return details;
-  
-        id = isHexStrict(id) ? id.substring(2) : id; // if 0x is there, then remove it
+
+        // id = isHexStrict(id) ? id.substring(2) : id; // if 0x is there, then remove it
         assetsDetails.push({
-          id: id,
-          min: fromWei(details.minimumValue),
+          id: stripHexPrefix(id), // if 0x is there, then remove it
+          min: fromWei(details.minimumValue, "microether"), // gives back microether = lovelace (for main asset),
+          // TODO: this will affect also other tokens/assets, but is this correct for them?
         });
       } catch (e) {
         console.error(e);
       }
     }
-  
+
     return assetsDetails;
   };
 
