@@ -4,50 +4,48 @@ import webpack from "webpack";
 import path from "path";
 import CopyPlugin from "copy-webpack-plugin";
 
-const {
-  NODE_ENV = "production",
-} = process.env;
+const { NODE_ENV = "production" } = process.env;
 
 module.exports = {
-  entry: "./src/index.ts",
-  //watch: NODE_ENV === "production",
-  mode: NODE_ENV,
-  target: "node",
-  output: {
-    path: path.resolve(__dirname, "build"),
-    filename: "index.js"
-  },
-  resolve: {
-    extensions: [".ts", ".js", ".json"],
-  },
-  plugins: [
-    new webpack.DefinePlugin({ CONFIG: JSON.stringify(config) }),
-    new webpack.IgnorePlugin({
-        resourceRegExp: /^electron$/,
-    }),
-    new CopyPlugin({
-      patterns: [
-          { 
-            from: path.resolve(__dirname, "contract"), 
-            to: path.resolve(__dirname, "build/contract"), 
-          },
-      ],
-    }),
-  ],
-  module: {
-      rules: [
-        {
-          use: {
-            loader: "ts-loader",
-            options: {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              getCustomTransformers: (program: any) => ({
-                before: [typescriptIsTransformer(program)],
-              }),
+    entry: "./src/index.ts",
+    //watch: NODE_ENV === "production",
+    mode: NODE_ENV,
+    target: "node",
+    output: {
+        path: path.resolve(__dirname, "build"),
+        filename: "index.js",
+    },
+    resolve: {
+        extensions: [".ts", ".js", ".json"],
+    },
+    plugins: [
+        new webpack.DefinePlugin({ CONFIG: JSON.stringify(config) }),
+        new webpack.IgnorePlugin({
+            resourceRegExp: /^electron$/,
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, "contract"),
+                    to: path.resolve(__dirname, "build/contract"),
+                },
+            ],
+        }),
+    ],
+    module: {
+        rules: [
+            {
+                use: {
+                    loader: "ts-loader",
+                    options: {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        getCustomTransformers: (program: any) => ({
+                            before: [typescriptIsTransformer(program)],
+                        }),
+                    },
+                },
+                exclude: /node_modules/,
             },
-          },
-          exclude: /node_modules/,
-        }
-      ]
-    }
+        ],
+    },
 };

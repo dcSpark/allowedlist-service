@@ -1,3 +1,3 @@
-it("Dummy test", function(done) { 
+it("Dummy test", function (done) {
     done();
 });

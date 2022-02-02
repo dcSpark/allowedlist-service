@@ -18,96 +18,89 @@ declare const CONFIG: ConfigType;
 
 const router = express();
 
-const middlewares = [
-  middleware.handleCors,
-  middleware.handleBodyRequestParsing,
-  middleware.handleCompression,
-];
+const middlewares = [middleware.handleCors, middleware.handleBodyRequestParsing, middleware.handleCompression];
 
 applyMiddleware(middlewares, router);
 
 const fullAddressList = async (req: Request, res: Response): Promise<void> => {
-  const allowList = await contract.getAccountsList();
-  if (allowList instanceof Error) {
-    res.status(400).send({ error: allowList.message });
-    return;
-  }
-  res.status(200).send({ allowList });
+    const allowList = await contract.getAccountsList();
+    if (allowList instanceof Error) {
+        res.status(400).send({ error: allowList.message });
+        return;
+    }
+    res.status(200).send({ allowList });
 };
 
 const isAddressAllowed = async (req: Request, res: Response) => {
-  // TODO: Update config so node parses this env variable as a Boolean
-  if (CONFIG.API.enforceWhitelist === "TRUE") {
-    if (req.query.address == null || req.query.address.length == 0) {
-      res.send({
-        error:
-          "Address not found. Please make sure that an address (string) is part of the request.",
-      });
-      return;
-    }
-    const validAddresses = await contract.getAccountsList();
-    if (validAddresses instanceof Error) {
-      res
-        .status(400)
-        .send({
-          error: `Couldn't get list of addresses to compare. ${validAddresses.message}`,
+    // TODO: Update config so node parses this env variable as a Boolean
+    if (CONFIG.API.enforceWhitelist === "TRUE") {
+        if (req.query.address == null || req.query.address.length == 0) {
+            res.send({
+                error: "Address not found. Please make sure that an address (string) is part of the request.",
+            });
+            return;
+        }
+        const validAddresses = await contract.getAccountsList();
+        if (validAddresses instanceof Error) {
+            res.status(400).send({
+                error: `Couldn't get list of addresses to compare. ${validAddresses.message}`,
+            });
+            return;
+        }
+        const address: string = req.query.address as string;
+        const isAllowed = validAddresses.indexOf(address) > -1;
+        res.send({
+            isAllowed,
         });
-      return;
+    } else {
+        res.send({ isAllowed: true });
     }
-    const address: string = req.query.address as string;
-    const isAllowed = validAddresses.indexOf(address) > -1;
-    res.send({
-      isAllowed,
-    });
-  } else {
-    res.send({ isAllowed: true });
-  }
 };
 
 const stargate = async (req: Request, res: Response) => {
-  const stargateAddress = await contract.getStargateAddress();
-  const tokenRegistry = await contract.getTokenRegistryAllowedList();
-  if (stargateAddress instanceof Error) {
-    res.status(400).send({ error: `Couldn't get stargate address. ${stargateAddress.message}` });
-    return;
-  }
-  if (tokenRegistry instanceof Error) {
-    res.status(400).send({ error: `Couldn't get assets. ${tokenRegistry.message}` });
-    return;
-  }
-  // TODO: Update config so node parses this env variable as a Boolean
-  if (CONFIG.API.mainnet === "TRUE") {
-    res.send({
-      current_address: stargateAddress,
-      ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
-      assets: tokenRegistry,
-    });
-    return;
-  } else {
-    res.send({
-      current_address: stargateAddress,
-      ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
-      assets: tokenRegistry,
-    });
-  }
+    const stargateAddress = await contract.getStargateAddress();
+    const tokenRegistry = await contract.getTokenRegistryAllowedList();
+    if (stargateAddress instanceof Error) {
+        res.status(400).send({ error: `Couldn't get stargate address. ${stargateAddress.message}` });
+        return;
+    }
+    if (tokenRegistry instanceof Error) {
+        res.status(400).send({ error: `Couldn't get assets. ${tokenRegistry.message}` });
+        return;
+    }
+    // TODO: Update config so node parses this env variable as a Boolean
+    if (CONFIG.API.mainnet === "TRUE") {
+        res.send({
+            current_address: stargateAddress,
+            ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
+            assets: tokenRegistry,
+        });
+        return;
+    } else {
+        res.send({
+            current_address: stargateAddress,
+            ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
+            assets: tokenRegistry,
+        });
+    }
 };
 
 const routes: Route[] = [
-  {
-    path: "/v1/isAddressAllowed",
-    method: "get",
-    handler: isAddressAllowed,
-  },
-  {
-    path: "/v1/fullAllowedList",
-    method: "get",
-    handler: fullAddressList,
-  },
-  {
-    path: "/v1/stargate",
-    method: "get",
-    handler: stargate,
-  },
+    {
+        path: "/v1/isAddressAllowed",
+        method: "get",
+        handler: isAddressAllowed,
+    },
+    {
+        path: "/v1/fullAllowedList",
+        method: "get",
+        handler: fullAddressList,
+    },
+    {
+        path: "/v1/stargate",
+        method: "get",
+        handler: stargate,
+    },
 ];
 
 applyRoutes(routes, router);
@@ -121,14 +114,10 @@ console.log("mainnet: ", CONFIG.API.mainnet);
 console.log("isAllowedList enforced: ", CONFIG.API.enforceWhitelist);
 
 contract
-  .initializeContract()
-  .then((_) => console.log("Contract connection initialized"))
-  .catch((e) =>
-    console.error(
-      `There was problem with connecting to the sidechain contract.${e}`
-    )
-  )
-  .finally(() => {
-    // always start REST API
-    server.listen(port, () => console.log(`listening on ${port}...`));
-  });
+    .initializeContract()
+    .then((_) => console.log("Contract connection initialized"))
+    .catch((e) => console.error(`There was problem with connecting to the sidechain contract.${e}`))
+    .finally(() => {
+        // always start REST API
+        server.listen(port, () => console.log(`listening on ${port}...`));
+    });

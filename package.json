@@ -8,7 +8,8 @@
     "dev:watch": "NODE_ENV=development webpack",
     "dev:run": "NODE_ENV=development nodemon build/index.js",
     "start": "pm2-runtime start ecosystem.config.js --env production",
-    "stop": "pm2 stop ecosystem.config.js"
+    "stop": "pm2 stop ecosystem.config.js",
+    "prettier": "prettier --write \"**/*.ts\""
   },
   "author": "",
   "license": "MIT",
