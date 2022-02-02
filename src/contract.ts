@@ -5,6 +5,7 @@ import type { AbiItem } from "web3-utils";
 import { isAddress, fromWei, stripHexPrefix } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 import path from "path";
+import { remove0x, toLovelaces } from "./utils";
 
 declare const CONFIG: ConfigType;
 

@@ -1,7 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
+import BN from "bn.js";
+import { fromWei, isHexStrict, toBN } from "web3-utils";
+
 export const contentTypeHeaders = { headers: { "Content-Type": "application/json" } };
 
 export const errMsgs = { noValue: "no value" };
+
+export const LOVELACES = 1000000;
 
 type Wrapper = (router: Router) => void;
 
@@ -50,3 +55,15 @@ export function scanInteger(x: any, strict = false): Nullable<number> {
             return null;
     }
 }
+
+export const toLovelaces = (value: string): string | Error => {
+    try {
+        return new BN(fromWei(value)).mul(new BN(LOVELACES)).toString();
+    } catch (e) {
+        const err = e as Error;
+        console.log(err.message);
+        return err;
+    }
+}
+
+export const remove0x = (value: string) => isHexStrict(value) ? value.substring(2) : value;
