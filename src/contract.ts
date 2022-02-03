@@ -9,10 +9,17 @@ import { WMAIN_ID } from "./utils";
 
 declare const CONFIG: ConfigType;
 
-type AssetDetails = {
-    id: string;
-    min: string;
+type TokensRegistry = {
+    minLovelace: string,
+    assets: AssetsDetails[]
 };
+
+type AssetsDetails = {
+    idCardano: string;
+    idMilkomeda: string;
+    minCNTInt?: string;
+    minGWei?: string;
+}
 export class AllowedListContract {
     web3!: Web3;
     bridgeContract!: Contract;
@@ -75,34 +82,42 @@ export class AllowedListContract {
         return await this.bridgeContract.methods.getAssetIds().call();
     };
 
-    public getTokenRegistryAllowedList = async (): Promise<AssetDetails[] | Error> => {
+    public getTokenRegistryAllowedList = async (): Promise<TokensRegistry | Error> => {
         // no filtering for now
         const assets = await this.getAssetIds();
         if (assets instanceof Error) return assets;
 
-        let assetsDetails: AssetDetails[] = [];
+        let assetsDetails: AssetsDetails[] = [];
+        let adaMinValue = "2000000"; // TODO: do we want to assume any default value for ada?
         for (let id of assets) {
             try {
                 const details = await this.bridgeContract.methods.tokenRegistry(id).call();
-
                 if (details instanceof Error) return details;
 
-                let minValue = fromWei(details.minimumValue);
                 if (id === WMAIN_ID) {
                     // conversion to Lovelaces should appear only for WADA
-                    minValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
+                    adaMinValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
+                } else { // if not WADA
+                    assetsDetails.push({
+                        idCardano: stripHexPrefix(id), // if 0x is there, then remove it
+                        idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
+                        minCNTInt: fromWei(details.minimumValue),
+                        minGWei: fromWei(details.minimumValue, "Gwei")
+                    });
                 }
 
-                assetsDetails.push({
-                    id: stripHexPrefix(id), // if 0x is there, then remove it
-                    min: minValue, 
-                });
+
             } catch (e) {
                 console.error(e);
             }
         }
 
-        return assetsDetails;
+        const tokenRegistry: TokensRegistry = {
+            minLovelace: adaMinValue ?? "2000000",
+            assets: assetsDetails
+        }
+
+        return tokenRegistry;
     };
 }
 export const contract = new AllowedListContract();

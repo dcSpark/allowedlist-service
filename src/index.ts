@@ -69,18 +69,29 @@ const stargate = async (req: Request, res: Response) => {
         return;
     }
     // TODO: Update config so node parses this env variable as a Boolean
+    // TODO: do we still need to distinguish between mainnet & devnet here?
     if (CONFIG.API.mainnet === "TRUE") {
         res.send({
             current_address: stargateAddress,
-            ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
-            assets: tokenRegistry,
+            ttl_expiry: new Date().setHours(24, 0, 0, 0),
+            ada: {
+                minLovelace: tokenRegistry.minLovelace,
+                fromADAFeeLovelace: "100000",
+                toADAFeeGWei: "100000,"
+            },
+            assets: tokenRegistry.assets,
         });
         return;
     } else {
         res.send({
             current_address: stargateAddress,
-            ttl_expiry: Number.MAX_SAFE_INTEGER / 2,
-            assets: tokenRegistry,
+            ttl_expiry: new Date().setHours(24, 0, 0, 0),
+            ada: {
+                minLovelace: tokenRegistry.minLovelace,
+                fromADAFeeLovelace: "100000",
+                toADAFeeGWei: "100000,"
+            },
+            assets: tokenRegistry.assets,
         });
     }
 };
