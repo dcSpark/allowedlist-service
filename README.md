@@ -68,6 +68,7 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 <details>
     <summary>/v1/fullAllowedList</summary>
     Returns array of EVM addresses allowed in the mainnet (`http://localhost:3000/v1/fullAllowedList`).
+
 ```json
 {
     "allowList": [
@@ -81,6 +82,7 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 <details>
     <summary>/v1/fullAllowedList</summary>
     Returns information if given address is on allowed list or not.(`http://localhost:3000/v1/isAddressAllowed?address=0x0...`).
+
 ```json
 {
     "isAllowed": true
@@ -92,14 +94,23 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
     <summary>/v1/stargate</summary>
     Returns stargate address, tll_expiry and list of assets.
     (For now only stargate address is fetched from bridge contract)
+
 ```json
 {
     "current_address": "addr1...",
     "ttl_expiry": 123,
+    "ada": {
+        "minLovelace": "2000000",
+        "fromADAFeeLovelace": "100000",
+        "toADAFeeGWei": "100000,"
+    },
     "assets": [
+        // NON ADA ASSETS
         {
-            "id": "asset fingerprint",
-            "min": "123"
+            "idCardano": "fingerprint",
+            "idMilkomeda": "ERC20 contract address",
+            "minCNTInt": "1",
+            "minGWei": "10000...000"
         },
     ]
 }
