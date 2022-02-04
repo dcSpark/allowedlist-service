@@ -12,6 +12,7 @@ interface ConfigType {
         port: number;
         enforceWhitelist: string;
         mainnet: string;
+        cacheIntervalMs: number;
     };
 }
 

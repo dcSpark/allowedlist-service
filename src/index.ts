@@ -93,6 +93,7 @@ const stargate = async (req: Request, res: Response) => {
             res.send({
                 current_address: stargateAddress,
                 ttl_expire: new Date().setHours(24, 0, 0, 0),
+                cache_update: CONFIG.API.cacheIntervalMs,
                 ada: {
                     minLovelace: tokenRegistry.minLovelace,
                     fromADAFeeLovelace: "500000",
@@ -105,6 +106,7 @@ const stargate = async (req: Request, res: Response) => {
             res.send({
                 current_address: stargateAddress,
                 ttl_expire: new Date().setHours(24, 0, 0, 0),
+                cache_update: CONFIG.API.cacheIntervalMs,
                 ada: {
                     minLovelace: tokenRegistry.minLovelace,
                     fromADAFeeLovelace: "500000",
@@ -119,7 +121,6 @@ const stargate = async (req: Request, res: Response) => {
         res.status(400).send({ error: `Couldn't get information about sidechain contract. ${err.message}` });
         return;
     }
-   
 };
 
 const clearCache = async (req: Request, res: Response): Promise<void> => {
@@ -192,7 +193,7 @@ contract
         // always start REST API
         server.listen(port, () => console.log(`listening on ${port}...`));
                 
-        cacheManager.keepCached(injectForCaching, 3600)
+        cacheManager.keepCached(injectForCaching, CONFIG.API.cacheIntervalMs)
         .then((_) => console.log("Cache updater initialized"))
         .catch((e: unknown) => console.error(e));
     });

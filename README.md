@@ -103,13 +103,14 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 
 <details>
     <summary>/v1/stargate</summary>
-    Returns stargate address, tll_expiry and list of assets.
+    Returns stargate address, tll_expire, cache_update and list of assets.
     (For now only stargate address is fetched from bridge contract)
 
 ```json
 {
     "current_address": "addr1...",
-    "ttl_expiry": 123,
+    "ttl_expire": 123,
+    "cacheIntervalMs": 123,
     "ada": {
         "minLovelace": "2000000",
         "fromADAFeeLovelace": "100000",
