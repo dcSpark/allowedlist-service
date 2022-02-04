@@ -93,7 +93,6 @@ const stargate = async (req: Request, res: Response) => {
             res.send({
                 current_address: stargateAddress,
                 ttl_expire: new Date().setHours(24, 0, 0, 0),
-                cache_update: CONFIG.API.cacheIntervalMs,
                 ada: {
                     minLovelace: tokenRegistry.minLovelace,
                     fromADAFeeLovelace: "500000",
@@ -106,7 +105,6 @@ const stargate = async (req: Request, res: Response) => {
             res.send({
                 current_address: stargateAddress,
                 ttl_expire: new Date().setHours(24, 0, 0, 0),
-                cache_update: CONFIG.API.cacheIntervalMs,
                 ada: {
                     minLovelace: tokenRegistry.minLovelace,
                     fromADAFeeLovelace: "500000",
