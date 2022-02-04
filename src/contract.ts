@@ -11,6 +11,8 @@ declare const CONFIG: ConfigType;
 
 type TokensRegistry = {
     minLovelace: string,
+    wrappingFee: string,
+    unwrappingFee: string,
     assets: AssetsDetails[]
 };
 
@@ -82,6 +84,24 @@ export class AllowedListContract {
         return await this.bridgeContract.methods.getAssetIds().call();
     };
 
+    public getWrappingFee = async (): Promise<string> => {
+        try {
+            return await this.bridgeContract.methods.WRAPPING_FEE().call();
+        } catch (e) {
+            console.log(e);
+            return "500000";
+        } 
+    };
+
+    public getUnwrappingFee = async (): Promise<string> => {
+        try {
+            return await this.bridgeContract.methods.UNWRAPPING_FEE().call();
+        } catch (e) {
+            console.log(e);
+            return "500000";
+        } 
+    };
+
     public getTokenRegistryAllowedList = async (): Promise<TokensRegistry | Error> => {
         // no filtering for now
         const assets = await this.getAssetIds();
@@ -89,6 +109,8 @@ export class AllowedListContract {
 
         let assetsDetails: AssetsDetails[] = [];
         let adaMinValue = "2000000"; // TODO: do we want to assume any default value for ada?
+        const wrappingFee =  await this.getWrappingFee();
+        const unwrappingFee = await this.getUnwrappingFee();
         for (let id of assets) {
             try {
                 const details = await this.bridgeContract.methods.tokenRegistry(id).call();
@@ -114,6 +136,8 @@ export class AllowedListContract {
 
         const tokenRegistry: TokensRegistry = {
             minLovelace: adaMinValue ?? "2000000",
+            wrappingFee: wrappingFee,
+            unwrappingFee: unwrappingFee,
             assets: assetsDetails
         }
 
