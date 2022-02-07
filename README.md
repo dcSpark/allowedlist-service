@@ -109,7 +109,7 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 ```json
 {
     "current_address": "addr1...",
-    "ttl_expire": 123,
+    "ttl_expiry": 123,
     "ada": {
         "minLovelace": "2000000",
         "fromADAFeeLovelace": "100000",

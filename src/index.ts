@@ -47,7 +47,7 @@ const fullAddressList = async (req: Request, res: Response): Promise<void> => {
     } catch (e) {
         const err = e as Error;
         console.log(`${err.name}, ${err.message}, ${err.stack}`);
-        res.status(400).send({ error: `Couldn't fetch nnformation about allowed list. ${err.message}` });
+        res.status(400).send({ error: `Couldn't fetch information about allowed list. ${err.message}` });
         return;
     }
 };
@@ -86,33 +86,19 @@ const stargate = async (req: Request, res: Response) => {
     try {
         const stargateAddress = await cacheManager.get(CacheKeys.STARGATE) as string;
         const tokenRegistry = await cacheManager.get(CacheKeys.TOKEN_REGISTRY) as TokensRegistry;
-        
-        // TODO: Update config so node parses this env variable as a Boolean
-        // TODO: do we still need to distinguish between mainnet & devnet here?
-        if (CONFIG.API.mainnet === "TRUE") {
-            res.send({
-                current_address: stargateAddress,
-                ttl_expire: new Date().setHours(24, 0, 0, 0),
-                ada: {
-                    minLovelace: tokenRegistry.minLovelace,
-                    fromADAFeeLovelace: "500000",
-                    toADAFeeGWei: "500000"
-                },
-                assets: tokenRegistry.assets,
-            });
-            return;
-        } else {
-            res.send({
-                current_address: stargateAddress,
-                ttl_expire: new Date().setHours(24, 0, 0, 0),
-                ada: {
-                    minLovelace: tokenRegistry.minLovelace,
-                    fromADAFeeLovelace: "500000",
-                    toADAFeeGWei: "500000"
-                },
-                assets: tokenRegistry.assets,
-            });
-        }
+
+        res.send({
+            current_address: stargateAddress,
+            ttl_expiry: new Date().setHours(24, 0, 0, 0),
+            ada: {
+                minLovelace: tokenRegistry.minLovelace,
+                fromADAFeeLovelace: "500000",
+                toADAFeeGWei: "500000"
+            },
+            assets: tokenRegistry.assets,
+        });
+        return;
+
     } catch (e) {
         const err = e as Error;
         console.log(`${err.name}, ${err.message}, ${err.stack}`);
