@@ -128,27 +128,3 @@ Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
 ```
 
 </details>
-
-<details>
-    <summary>/v1/clearCache</summary>
-    Allows to flush the cache storage.
-
-```json
-{
-    "message": "Cache flushed."
-}
-```
-
-</details>
-
-<details>
-    <summary>/v1/updateCache</summary>
-    Cache is being updated in interval of time. If we need to update cache `now`, this endpoint allows to do that.
-
-```json
-{
-    "message": "Cache storage updated."
-}
-```
-
-</details>
