@@ -121,30 +121,6 @@ const stargate = async (req: Request, res: Response) => {
     }
 };
 
-const clearCache = async (req: Request, res: Response): Promise<void> => {
-    try {
-        cacheManager.flush();
-        res.status(200).send({ message: "Cache flushed." });
-    } catch (e) {
-        const err = e as Error;
-        console.log(`${err.name}, ${err.message}, ${err.stack}`);
-        res.status(400).send({ error: `Couldn't clear the cache. ${err.message}` });
-        return;
-    }
-};
-
-const updateCache = async (req: Request, res: Response): Promise<void> => {
-    try {
-        cacheManager.updateCache(injectForCaching);
-        res.status(200).send({ message: "Cache storage updated.." });
-    } catch (e) {
-        const err = e as Error;
-        console.log(`${err.name}, ${err.message}, ${err.stack}`);
-        res.status(400).send({ error: `Couldn't clear the cache. ${err.message}` });
-        return;
-    }
-};
-
 const routes: Route[] = [
     {
         path: "/v1/isAddressAllowed",
@@ -160,16 +136,6 @@ const routes: Route[] = [
         path: "/v1/stargate",
         method: "get",
         handler: stargate,
-    },
-    {
-        path: "/v1/clearCache",
-        method: "get",
-        handler: clearCache,
-    },
-    {
-        path: "/v1/updateCache",
-        method: "get",
-        handler: updateCache,
     },
 ];
 
