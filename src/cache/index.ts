@@ -1,5 +1,4 @@
 import NodeCache from "node-cache";
-import { delay } from "../utils";
 
 export type CacheOption = {
     key: CacheKeys;
@@ -35,9 +34,10 @@ export class CacheManager {
     }
 
     public keepCached = async (actions: CacheOption[], intervalMs: number = 20000): Promise<void> => {
-        await this.updateCache(actions);
-        await delay(intervalMs);
-        this.keepCached(actions, intervalMs);
+        await this.updateCache(actions); // load first time - setInterval runs then scheduled jobs and first one starts after intervalMs
+        setInterval(async () => {
+            await this.updateCache(actions);
+        }, intervalMs);
     }
 
     public save(key: string, item: unknown): void {

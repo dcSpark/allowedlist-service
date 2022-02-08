@@ -52,5 +52,3 @@ export function scanInteger(x: any, strict = false): Nullable<number> {
             return null;
     }
 }
-
-export const delay = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
