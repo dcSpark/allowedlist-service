@@ -82,6 +82,11 @@ export class AllowedListContract {
         return await this.bridgeContract.methods.getAssetIds().call();
     };
 
+    public getGasPrice = async (): Promise<string> => {
+        const gasPrice = await this.web3.eth.getGasPrice();
+        return fromWei(gasPrice, "Gwei");
+    };
+
     public getTokenRegistryAllowedList = async (): Promise<TokensRegistry | Error> => {
         // no filtering for now
         const assets = await this.getAssetIds();

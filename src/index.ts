@@ -86,14 +86,16 @@ const stargate = async (req: Request, res: Response) => {
     try {
         const stargateAddress = await cacheManager.get(CacheKeys.STARGATE) as string;
         const tokenRegistry = await cacheManager.get(CacheKeys.TOKEN_REGISTRY) as TokensRegistry;
-
+        const gasPrice = await contract.getGasPrice();
+        console.log(gasPrice)
         res.send({
             current_address: stargateAddress,
             ttl_expiry: new Date().setHours(24, 0, 0, 0),
+            gas_price: gasPrice ?? "60000000000",
             ada: {
                 minLovelace: tokenRegistry.minLovelace,
                 fromADAFeeLovelace: "500000",
-                toADAFeeGWei: "600000"
+                toADAFeeGWei: "500000"
             },
             assets: tokenRegistry.assets,
         });
