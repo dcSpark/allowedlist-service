@@ -93,7 +93,7 @@ const stargate = async (req: Request, res: Response) => {
             ada: {
                 minLovelace: tokenRegistry.minLovelace,
                 fromADAFeeLovelace: "500000",
-                toADAFeeGWei: "500000"
+                toADAFeeGWei: "600000"
             },
             assets: tokenRegistry.assets,
         });
