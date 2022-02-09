@@ -9,12 +9,12 @@ import { WMAIN_ID } from "./utils";
 
 declare const CONFIG: ConfigType;
 
-type TokensRegistry = {
+export type TokensRegistry = {
     minLovelace: string,
     assets: AssetsDetails[]
 };
 
-type AssetsDetails = {
+export type AssetsDetails = {
     idCardano: string;
     idMilkomeda: string;
     minCNTInt?: string;
@@ -42,6 +42,7 @@ export class AllowedListContract {
                 bridgeLogic["abi"] as AbiItem[],
                 bridgeProxy["networks"][CONFIG.sidechain.chainId]["address"]
             );
+
         } catch (e) {
             console.error(e);
         }
@@ -54,11 +55,10 @@ export class AllowedListContract {
 
         assert(isAddress(accountRulesAddress));
         this.allowedListContract = new this.web3.eth.Contract(accountRulesList["abi"] as AbiItem[], accountRulesAddress);
-
         return this;
     }
 
-    public async getAccountsList(): Promise<string[] | Error> {
+    public getAccountsList = async (): Promise<string[] | Error> => {
         try {
             return await this.allowedListContract.methods.getAccounts().call();
         } catch (e: any) {
@@ -68,7 +68,7 @@ export class AllowedListContract {
         }
     }
 
-    public async getStargateAddress(): Promise<string[] | Error> {
+    public getStargateAddress = async (): Promise<string[] | Error> => {
         try {
             return await this.bridgeContract.methods.stargateAddress().call();
         } catch (e: any) {
@@ -120,4 +120,5 @@ export class AllowedListContract {
         return tokenRegistry;
     };
 }
+
 export const contract = new AllowedListContract();
