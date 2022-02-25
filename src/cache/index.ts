@@ -35,6 +35,7 @@ export class CacheManager {
 
     public keepCached = async (actions: CacheOption[], intervalMs: number = 20000): Promise<void> => {
         await this.updateCache(actions); // load first time - setInterval runs then scheduled jobs and first one starts after intervalMs
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         setInterval(async () => {
             await this.updateCache(actions);
         }, intervalMs);
