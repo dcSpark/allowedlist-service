@@ -89,9 +89,9 @@ const stargate = async (req: Request, res: Response) => {
             return;
         }
 
-        const tokenRegistry = await cacheManager.get(CacheKeys.TOKEN_REGISTRY);
-        if (!tokenRegistry) {
-            res.status(400).send({ error: `TokenRegistry saved in cache is ${tokenRegistry}.` });
+        const tokenRegistry = (await cacheManager.get(CacheKeys.TOKEN_REGISTRY)) as TokensRegistry | Error;
+        if (tokenRegistry instanceof Error) {
+            res.status(400).send({ error: `TokenRegistry saved in cache is ${tokenRegistry.message}.` });
             return;
         }
 

@@ -82,7 +82,6 @@ export class AllowedListContract {
     };
 
     public getTokenRegistryAllowedList = async (): Promise<TokensRegistry | Error> => {
-        // no filtering for now
         const assets = (await this.getAssetIds()) as string[];
 
         let assetsDetails: AssetsDetails[] = [];
@@ -90,7 +89,6 @@ export class AllowedListContract {
         for (let id of assets) {
             try {
                 const details = await this.bridgeContract.methods.tokenRegistry(id).call();
-                if (!details) throw new Error(details); // if there was a problem with fetching details, just log error
 
                 if (id === WMAIN_ID) {
                     // conversion to Lovelaces should appear only for milkADA
@@ -105,16 +103,17 @@ export class AllowedListContract {
                     });
                 }
             } catch (e) {
+                let err = e as Error;
                 console.error(`Error when retrieving asset of id: ${id}.\nMore info:`);
                 console.error(e);
+                return err; // if something bad happens while fetching token registry, just return null
             }
         }
 
         const tokenRegistry: TokensRegistry = {
-            minLovelace: adaMinValue ?? "2000000",
-            assets: assetsDetails ?? [],
+            minLovelace: adaMinValue,
+            assets: assetsDetails,
         };
-
         return tokenRegistry;
     };
 }

@@ -14,6 +14,7 @@ interface ConfigType {
         mainnet: string;
         cacheIntervalMs: number;
         requestRetries: number;
+        requestRetriesMs: number;
     };
 }
 

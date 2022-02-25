@@ -73,8 +73,8 @@ export const requestWrapper = async (func: Function): Promise<any> => {
             const err = e as Error;
             retryNumber++;
             console.log(`Retry ${retryNumber}/${CONFIG.API.requestRetries}`);
-            result = new Error(`Probilem with executing: ${func}\n${err.name},${err.message},${err.stack}`);
-            await delay(5000); // retry in 5s
+            result = new Error(`Error while requesting the function: ${err.message}`);
+            await delay(CONFIG.API.requestRetriesMs); // retry in 5s
         }
     }
 

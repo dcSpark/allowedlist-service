@@ -3,7 +3,7 @@ import { requestWrapper } from "../utils";
 
 export type CacheOption = {
     key: CacheKeys;
-    method: () => unknown;
+    method: Promise<unknown>;
 };
 
 export enum CacheKeys {
@@ -46,11 +46,9 @@ export class CacheManager {
         this.cacheStore.set(key, item);
     }
 
-    public async get(key: string): Promise<unknown | null> {
+    public async get(key: string): Promise<unknown> {
         console.log(`getting from cache... key: ${key}`);
-        const value = await this.cacheStore.get(key);
-        if (value) return value;
-        return null;
+        return await this.cacheStore.get(key);
     }
 
     public delete(keys: string[]): void {

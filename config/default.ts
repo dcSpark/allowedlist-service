@@ -14,5 +14,6 @@ export default {
         mainnet: process.env.MAINNET || "FALSE",
         cacheIntervalMs: 12000000, // update every 20min
         requestRetries: 5,
+        requestRetriesMs: 100,
     },
 } as ConfigType;
