@@ -1,5 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 
+declare const CONFIG: ConfigType;
+
 export const contentTypeHeaders = { headers: { "Content-Type": "application/json" } };
 
 export const errMsgs = { noValue: "no value" };
@@ -52,3 +54,29 @@ export function scanInteger(x: any, strict = false): Nullable<number> {
             return null;
     }
 }
+export const delay = (ms: number) =>
+    new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+
+// any on purpose, cause it can be any payload or Error
+export const requestWrapper = async (func: Function): Promise<any> => {
+    let retryNumber = 0;
+    let result!: any;
+    while (retryNumber < CONFIG.API.requestRetries) {
+        try {
+            result = await func();
+            if (!result) throw result;
+            return result;
+        } catch (e) {
+            console.error(e);
+            const err = e as Error;
+            retryNumber++;
+            console.log(`Retry ${retryNumber}/${CONFIG.API.requestRetries}`);
+            result = new Error(`Probilem with executing: ${func}\n${err.name},${err.message},${err.stack}`);
+            await delay(5000); // retry in 5s
+        }
+    }
+
+    return result;
+};

@@ -1,4 +1,5 @@
 import NodeCache from "node-cache";
+import { requestWrapper } from "../utils";
 
 export type CacheOption = {
     key: CacheKeys;
@@ -8,7 +9,7 @@ export type CacheOption = {
 export enum CacheKeys {
     STARGATE = "STARGATE",
     TOKEN_REGISTRY = "TOKEN_REGISTRY",
-    FULL_ALLOWED_LIST = "FULL_ALLOWED_LIST"
+    FULL_ALLOWED_LIST = "FULL_ALLOWED_LIST",
 }
 
 // updating mechanics:
@@ -27,11 +28,10 @@ export class CacheManager {
     public updateCache = async (actions: CacheOption[]) => {
         for (let action of actions) {
             console.log(`Updating ${action.key}`);
-            const result = await action.method();
-            // console.log(result);
+            const result = await requestWrapper(action.method);
             this.save(action.key, result);
         }
-    }
+    };
 
     public keepCached = async (actions: CacheOption[], intervalMs: number = 20000): Promise<void> => {
         await this.updateCache(actions); // load first time - setInterval runs then scheduled jobs and first one starts after intervalMs
@@ -39,7 +39,7 @@ export class CacheManager {
         setInterval(async () => {
             await this.updateCache(actions);
         }, intervalMs);
-    }
+    };
 
     public save(key: string, item: unknown): void {
         console.log(`saving to cache... key: ${key}`);

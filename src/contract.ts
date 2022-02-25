@@ -10,8 +10,8 @@ import { WMAIN_ID } from "./utils";
 declare const CONFIG: ConfigType;
 
 export type TokensRegistry = {
-    minLovelace: string,
-    assets: AssetsDetails[]
+    minLovelace: string;
+    assets: AssetsDetails[];
 };
 
 export type AssetsDetails = {
@@ -19,7 +19,7 @@ export type AssetsDetails = {
     idMilkomeda: string;
     minCNTInt?: string;
     minGWei?: string;
-}
+};
 export class AllowedListContract {
     web3!: Web3;
     bridgeContract!: Contract;
@@ -42,7 +42,6 @@ export class AllowedListContract {
                 bridgeLogic["abi"] as AbiItem[],
                 bridgeProxy["networks"][CONFIG.sidechain.chainId]["address"]
             );
-
         } catch (e) {
             console.error(e);
         }
@@ -66,7 +65,7 @@ export class AllowedListContract {
             console.error(error.message);
             return new Error(`Contract not initialized properly. Details: ${error.message}`);
         }
-    }
+    };
 
     public getStargateAddress = async (): Promise<string[] | Error> => {
         try {
@@ -76,46 +75,45 @@ export class AllowedListContract {
             console.error(error.message);
             return new Error(`Contract not initialized properly. Details: ${error.message}`);
         }
-    }
+    };
 
-    public getAssetIds = async (): Promise<string[] | Error> => {
+    public getAssetIds = async (): Promise<unknown> => {
         return await this.bridgeContract.methods.getAssetIds().call();
     };
 
     public getTokenRegistryAllowedList = async (): Promise<TokensRegistry | Error> => {
         // no filtering for now
-        const assets = await this.getAssetIds();
-        if (assets instanceof Error) return assets;
+        const assets = (await this.getAssetIds()) as string[];
 
         let assetsDetails: AssetsDetails[] = [];
-        let adaMinValue = "2000000"; // TODO: do we want to assume any default value for ada?
+        let adaMinValue = "2000000";
         for (let id of assets) {
             try {
                 const details = await this.bridgeContract.methods.tokenRegistry(id).call();
-                if (details instanceof Error) return details;
+                if (!details) throw new Error(details); // if there was a problem with fetching details, just log error
 
                 if (id === WMAIN_ID) {
-                    // conversion to Lovelaces should appear only for WADA
+                    // conversion to Lovelaces should appear only for milkADA
                     adaMinValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
-                } else { // if not WADA
+                } else {
+                    // if not WADA
                     assetsDetails.push({
                         idCardano: stripHexPrefix(id), // if 0x is there, then remove it
                         idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
                         minCNTInt: fromWei(details.minimumValue),
-                        minGWei: fromWei(details.minimumValue, "Gwei")
+                        minGWei: fromWei(details.minimumValue, "Gwei"),
                     });
                 }
-
-
             } catch (e) {
+                console.error(`Error when retrieving asset of id: ${id}.\nMore info:`);
                 console.error(e);
             }
         }
 
         const tokenRegistry: TokensRegistry = {
             minLovelace: adaMinValue ?? "2000000",
-            assets: assetsDetails
-        }
+            assets: assetsDetails ?? [],
+        };
 
         return tokenRegistry;
     };
