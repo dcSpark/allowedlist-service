@@ -3,7 +3,7 @@ import fs from "fs";
 import Web3 from "web3";
 import type { AbiItem } from "web3-utils";
 import { isAddress, fromWei, stripHexPrefix } from "web3-utils";
-import { Contract } from "web3-eth-contract";
+import type { Contract } from "web3-eth-contract";
 import path from "path";
 import { WMAIN_ID } from "./utils";
 
@@ -59,8 +59,9 @@ export class AllowedListContract {
 
     public getAccountsList = async (): Promise<string[] | Error> => {
         try {
-            return await this.allowedListContract.methods.getAccounts().call();
-        } catch (e: any) {
+            const accounts = await this.allowedListContract.methods.getAccounts().call();
+            return accounts;
+        } catch (e) {
             const error = e as Error;
             console.error(error.message);
             return new Error(`Contract not initialized properly. Details: ${error.message}`);
@@ -69,8 +70,9 @@ export class AllowedListContract {
 
     public getStargateAddress = async (): Promise<string[] | Error> => {
         try {
-            return await this.bridgeContract.methods.stargateAddress().call();
-        } catch (e: any) {
+            const stargateAddress = await this.bridgeContract.methods.stargateAddress().call();
+            return stargateAddress;
+        } catch (e) {
             const error = e as Error;
             console.error(error.message);
             return new Error(`Contract not initialized properly. Details: ${error.message}`);
@@ -78,7 +80,8 @@ export class AllowedListContract {
     };
 
     public getAssetIds = async (): Promise<unknown> => {
-        return await this.bridgeContract.methods.getAssetIds().call();
+        const assets = await this.bridgeContract.methods.getAssetIds().call();
+        return assets;
     };
 
     public getTokenRegistryAllowedList = async (): Promise<TokensRegistry | Error> => {

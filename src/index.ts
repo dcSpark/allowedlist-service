@@ -1,15 +1,17 @@
 import http from "http";
+import type { Request, Response } from "express";
 import express from "express";
-import { Request, Response } from "express";
+
+import type { Route } from "./utils";
+import { applyMiddleware, applyRoutes } from "./utils";
+import * as middleware from "./middleware";
+import type { TokensRegistry } from "./contract";
+import { contract } from "./contract";
+import type { CacheOption } from "./cache";
+import { CacheKeys, cacheManager } from "./cache";
 
 // eslint-disable-next-line
 const semverCompare = require("semver-compare");
-
-import { applyMiddleware, applyRoutes, Route } from "./utils";
-import * as middleware from "./middleware";
-import { contract, TokensRegistry } from "./contract";
-import { CacheKeys, CacheOption } from "./cache";
-import { cacheManager } from "./cache";
 
 // populated by ConfigWebpackPlugin
 declare const CONFIG: ConfigType;
@@ -48,14 +50,13 @@ const fullAddressList = async (req: Request, res: Response): Promise<void> => {
         const err = e as Error;
         console.log(`${err.name}, ${err.message}, ${err.stack}`);
         res.status(400).send({ error: `Couldn't fetch information about allowed list. ${err.message}` });
-        return;
     }
 };
 
 const isAddressAllowed = async (req: Request, res: Response) => {
     // TODO: Update config so node parses this env variable as a Boolean
     if (CONFIG.API.enforceWhitelist === "TRUE") {
-        if (req.query.address == null || req.query.address.length == 0) {
+        if (req.query.address == null || req.query.address.length === 0) {
             res.send({
                 error: "Address not found. Please make sure that an address (string) is part of the request.",
             });
@@ -73,7 +74,6 @@ const isAddressAllowed = async (req: Request, res: Response) => {
             const err = e as Error;
             console.log(`${err.name}, ${err.message}, ${err.stack}`);
             res.status(400).send({ error: `Couldn't check validity of the address. ${err.message}` });
-            return;
         }
     } else {
         res.send({ isAllowed: true });
@@ -95,23 +95,21 @@ const stargate = async (req: Request, res: Response) => {
             return;
         }
 
-        let registry = tokenRegistry as TokensRegistry;
         res.send({
             current_address: stargateAddress,
             ttl_expiry: new Date().setHours(24, 0, 0, 0),
             ada: {
-                minLovelace: registry.minLovelace,
+                minLovelace: tokenRegistry.minLovelace,
                 fromADAFeeLovelace: "500000",
                 toADAFeeGWei: "500000",
             },
-            assets: registry.assets,
+            assets: tokenRegistry.assets,
         });
         return;
     } catch (e) {
         const err = e as Error;
         console.log(`${err.name}, ${err.message}, ${err.stack}`);
         res.status(400).send({ error: `Couldn't get information about sidechain contract. ${err.message}` });
-        return;
     }
 };
 
