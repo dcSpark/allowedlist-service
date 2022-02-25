@@ -131,7 +131,6 @@ module.exports = {
       'object-curly-spacing': 1,
       'spaced-comment': 1,
       'import/imports-first': 1,
-      'react/jsx-indent': 1,
       'global-require': 'off',
       'no-await-in-loop': 0,
       'no-unused-expressions': 0,
