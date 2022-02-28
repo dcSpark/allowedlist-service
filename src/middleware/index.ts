@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from "express";
+import type { NextFunction, Request, Response, Router } from "express";
 import cors from "cors";
 import parser from "body-parser";
 import compression from "compression";
