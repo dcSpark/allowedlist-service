@@ -3,15 +3,15 @@ import fs from "fs";
 import Web3 from "web3";
 import type { AbiItem } from "web3-utils";
 import { isAddress, fromWei, stripHexPrefix } from "web3-utils";
-import { Contract } from "web3-eth-contract";
+import type { Contract } from "web3-eth-contract";
 import path from "path";
 import { WMAIN_ID } from "./utils";
 
 declare const CONFIG: ConfigType;
 
 export type TokensRegistry = {
-    minLovelace: string,
-    assets: AssetsDetails[]
+    minLovelace: string;
+    assets: AssetsDetails[];
 };
 
 export type AssetsDetails = {
@@ -19,7 +19,7 @@ export type AssetsDetails = {
     idMilkomeda: string;
     minCNTInt?: string;
     minGWei?: string;
-}
+};
 export class AllowedListContract {
     web3!: Web3;
     bridgeContract!: Contract;
@@ -42,7 +42,6 @@ export class AllowedListContract {
                 bridgeLogic["abi"] as AbiItem[],
                 bridgeProxy["networks"][CONFIG.sidechain.chainId]["address"]
             );
-
         } catch (e) {
             console.error(e);
         }
@@ -60,26 +59,29 @@ export class AllowedListContract {
 
     public getAccountsList = async (): Promise<string[] | Error> => {
         try {
-            return await this.allowedListContract.methods.getAccounts().call();
-        } catch (e: any) {
+            const accounts = await this.allowedListContract.methods.getAccounts().call();
+            return accounts;
+        } catch (e) {
             const error = e as Error;
             console.error(error.message);
             return new Error(`Contract not initialized properly. Details: ${error.message}`);
         }
-    }
+    };
 
     public getStargateAddress = async (): Promise<string[] | Error> => {
         try {
-            return await this.bridgeContract.methods.stargateAddress().call();
-        } catch (e: any) {
+            const stargateAddress = await this.bridgeContract.methods.stargateAddress().call();
+            return stargateAddress;
+        } catch (e) {
             const error = e as Error;
             console.error(error.message);
             return new Error(`Contract not initialized properly. Details: ${error.message}`);
         }
-    }
+    };
 
     public getAssetIds = async (): Promise<string[] | Error> => {
-        return await this.bridgeContract.methods.getAssetIds().call();
+        const assetIds = await this.bridgeContract.methods.getAssetIds().call();
+        return assetIds;
     };
 
     public getTokenRegistryAllowedList = async (): Promise<TokensRegistry | Error> => {
@@ -97,16 +99,15 @@ export class AllowedListContract {
                 if (id === WMAIN_ID) {
                     // conversion to Lovelaces should appear only for WADA
                     adaMinValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
-                } else { // if not WADA
+                } else {
+                    // if not WADA
                     assetsDetails.push({
                         idCardano: stripHexPrefix(id), // if 0x is there, then remove it
                         idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
                         minCNTInt: fromWei(details.minimumValue),
-                        minGWei: fromWei(details.minimumValue, "Gwei")
+                        minGWei: fromWei(details.minimumValue, "Gwei"),
                     });
                 }
-
-
             } catch (e) {
                 console.error(e);
             }
@@ -114,8 +115,8 @@ export class AllowedListContract {
 
         const tokenRegistry: TokensRegistry = {
             minLovelace: adaMinValue ?? "2000000",
-            assets: assetsDetails
-        }
+            assets: assetsDetails,
+        };
 
         return tokenRegistry;
     };
