@@ -90,8 +90,8 @@ const stargate = async (req: Request, res: Response) => {
             ttl_expiry: new Date().setHours(24, 0, 0, 0),
             ada: {
                 minLovelace: tokenRegistry.minLovelace,
-                fromADAFeeLovelace: "500000",
-                toADAFeeGWei: "500000",
+                fromADAFeeLovelace: "100000",
+                toADAFeeGWei: "1000000000",
             },
             assets: tokenRegistry.assets,
         });
