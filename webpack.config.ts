@@ -37,6 +37,10 @@ module.exports = {
                     from: path.resolve(__dirname, "contract"),
                     to: path.resolve(__dirname, "build/contract"),
                 },
+                {
+                    from: path.resolve(__dirname, "files"),
+                    to: path.resolve(__dirname, "build/files"),
+                },
             ],
         }),
     ],

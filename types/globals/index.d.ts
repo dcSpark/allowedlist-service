@@ -13,6 +13,7 @@ interface ConfigType {
         enforceWhitelist: string;
         mainnet: string;
         cacheIntervalMs: number;
+        allowedAddressesCSV: string;
     };
 }
 

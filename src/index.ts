@@ -3,7 +3,7 @@ import express from "express";
 import type { Request, Response } from "express";
 
 import type { Route } from "./utils";
-import { applyMiddleware, applyRoutes } from "./utils";
+import { applyMiddleware, applyRoutes, loadAddressesFromCSV } from "./utils";
 import * as middleware from "./middleware";
 import type { TokensRegistry } from "./contract";
 import { contract } from "./contract";
@@ -36,7 +36,7 @@ const injectForCaching: CacheOption[] = [
     },
     {
         key: CacheKeys.FULL_ALLOWED_LIST,
-        method: contract.getAccountsList,
+        method: loadAddressesFromCSV,
     },
 ];
 
