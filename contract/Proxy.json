@@ -35,10 +35,10 @@
   ],
   "networks": {
     "200101": {
-      "address": "0x171f6691141c0D2632FAEC7336C7c968aeb74E05"
+      "address": "0x319f10d19e21188ecF58b9a146Ab0b2bfC894648"
     },
     "2001": {
-      "address": "0x000000000000000000000000000000000000bbbb"
+      "address": "0xD0Fab4aE1ff28825aabD2A16566f89EB8948F9aB"
     }
   }
 }
