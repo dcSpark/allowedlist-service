@@ -63,9 +63,9 @@ const isAddressAllowed = async (req: Request, res: Response) => {
             return;
         }
         try {
-            const validAddresses = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as string[];
+            const validAddresses = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as Set<string>;
             const address: string = req.query.address as string;
-            const isAllowed = validAddresses.indexOf(address) > -1;
+            const isAllowed = validAddresses.has(address);
             res.send({
                 isAllowed,
             });
