@@ -12,6 +12,8 @@ declare const CONFIG: ConfigType;
 export type TokensRegistry = {
     minLovelace: string;
     assets: AssetsDetails[];
+    wrappingFee: string;
+    unwrappingFee: string;
 };
 
 export type AssetsDetails = {
@@ -79,6 +81,28 @@ export class AllowedListContract {
         }
     };
 
+    public getWrappingFee = async (): Promise<string | Error> => {
+        try {
+            const wrappingFee = await this.bridgeContract.methods.WRAPPING_FEE().call();
+            return wrappingFee;
+        } catch (e) {
+            const error = e as Error;
+            console.error(`Wrapping fee was not retrieved properly. Details: ${error.message}`);
+            return "100000";
+        }
+    };
+
+    public getUnwrappingFee = async (): Promise<string | Error> => {
+        try {
+            const unwrappingFee = await this.bridgeContract.methods.UNWRAPPING_FEE().call();
+            return unwrappingFee;
+        } catch (e) {
+            const error = e as Error;
+            console.error(`Unwrapping fee was not retrieved properly. Details: ${error.message}`);
+            return "1000000000";
+        }
+    };
+
     public getAssetIds = async (): Promise<string[] | Error> => {
         const assetIds = await this.bridgeContract.methods.getAssetIds().call();
         return assetIds;
@@ -113,9 +137,17 @@ export class AllowedListContract {
             }
         }
 
+        const fromADAFeeLovelace = await contract.getWrappingFee();
+        const toADAFeeGWei = await contract.getUnwrappingFee();
+
+        if (fromADAFeeLovelace instanceof Error) return fromADAFeeLovelace;
+        if (toADAFeeGWei instanceof Error) return toADAFeeGWei;
+
         const tokenRegistry: TokensRegistry = {
             minLovelace: adaMinValue ?? "2000000",
             assets: assetsDetails,
+            wrappingFee: fromWei(fromADAFeeLovelace, "microether"),
+            unwrappingFee: fromWei(toADAFeeGWei, "Gwei"),
         };
 
         return tokenRegistry;
