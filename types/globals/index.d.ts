@@ -1,9 +1,6 @@
 interface ConfigType {
     sidechain: {
         nodeUrl: string;
-        accountIngressAddress: string;
-        accountIngress: string;
-        accountRulesList: string;
         bridgeProxyContract: string;
         bridgeLogicContract: string;
         chainId: number;

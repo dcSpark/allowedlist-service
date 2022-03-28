@@ -44,8 +44,8 @@ const injectForCaching: CacheOption[] = [
 // then same data should be retrieved when the client calls the api - this way we limit number of connections and only the service can query the sidechain
 const fullAddressList = async (req: Request, res: Response): Promise<void> => {
     try {
-        const allowList = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as string;
-        res.status(200).send({ allowList });
+        const allowList = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as Set<string>;
+        res.status(200).send({ allowList: [...allowList.keys()] });
     } catch (e) {
         const err = e as Error;
         console.log(`${err.name}, ${err.message}, ${err.stack}`);
@@ -133,7 +133,7 @@ console.log("isAllowedList enforced: ", CONFIG.API.enforceWhitelist);
 
 contract
     .initializeContract()
-    .then(() => console.log("Contract connection initialized"))
+    .then(() => console.log("Contract connection initialized."))
     .catch((e) => console.error(`There was problem with connecting to the sidechain contract.${e}`))
     .finally(() => {
         // always start REST API

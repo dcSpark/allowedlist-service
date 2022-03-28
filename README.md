@@ -64,14 +64,9 @@ Values can be also set using `environmental` variables such as:
 
 # Contracts
 
-Service uses 2 contracts living on the Besu node on the sidechain (`mainnet`).
+Service uses 1 contract living on the Besu node on the sidechain (`mainnet`).
 
-1. `AllowedList Contract` - requires 2 files (inside `contracts/` directory):
-
-    - `AccountIngress.json` - required to initialize account ingress contract & fetch necessary contract rules
-    - `AccountRulesList.json` - required to fetch specific functionalities like `getAccounts()`
-
-2. `Bridge Contract` - requires 2 files (inside `contracts/` directory):
+1. `Bridge Contract` - requires 2 files (inside `contracts/` directory):
     - `Proxy.json` - introduces sidechain bridge contract key initialization features
     - `SidechainBridge.json` - introduces sidechain bridge contract functionalities
 
