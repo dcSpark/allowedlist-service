@@ -3,7 +3,7 @@ import express from "express";
 import type { Request, Response } from "express";
 
 import type { Route } from "./utils";
-import { applyMiddleware, applyRoutes } from "./utils";
+import { applyMiddleware, applyRoutes, loadAddressesFromCSV } from "./utils";
 import * as middleware from "./middleware";
 import type { TokensRegistry } from "./contract";
 import { contract } from "./contract";
@@ -36,7 +36,7 @@ const injectForCaching: CacheOption[] = [
     },
     {
         key: CacheKeys.FULL_ALLOWED_LIST,
-        method: contract.getAccountsList,
+        method: loadAddressesFromCSV,
     },
 ];
 
@@ -44,8 +44,8 @@ const injectForCaching: CacheOption[] = [
 // then same data should be retrieved when the client calls the api - this way we limit number of connections and only the service can query the sidechain
 const fullAddressList = async (req: Request, res: Response): Promise<void> => {
     try {
-        const allowList = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as string;
-        res.status(200).send({ allowList });
+        const allowList = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as Set<string>;
+        res.status(200).send({ allowList: [...allowList.keys()] });
     } catch (e) {
         const err = e as Error;
         console.log(`${err.name}, ${err.message}, ${err.stack}`);
@@ -63,9 +63,9 @@ const isAddressAllowed = async (req: Request, res: Response) => {
             return;
         }
         try {
-            const validAddresses = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as string[];
+            const validAddresses = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as Set<string>;
             const address: string = req.query.address as string;
-            const isAllowed = validAddresses.indexOf(address) > -1;
+            const isAllowed = validAddresses.has(address);
             res.send({
                 isAllowed,
             });
@@ -133,7 +133,7 @@ console.log("isAllowedList enforced: ", CONFIG.API.enforceWhitelist);
 
 contract
     .initializeContract()
-    .then(() => console.log("Contract connection initialized"))
+    .then(() => console.log("Contract connection initialized."))
     .catch((e) => console.error(`There was problem with connecting to the sidechain contract.${e}`))
     .finally(() => {
         // always start REST API

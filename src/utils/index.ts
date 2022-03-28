@@ -1,4 +1,10 @@
 import type { Router, Request, Response, NextFunction } from "express";
+import fs from "fs";
+import { parse } from "csv-parse";
+import path from "path";
+import { isAddress } from "web3-utils";
+
+declare const CONFIG: ConfigType;
 
 export const contentTypeHeaders = { headers: { "Content-Type": "application/json" } };
 
@@ -42,3 +48,43 @@ export function assertNever(x: never): never {
 }
 
 export type Nullable<T> = T | null;
+
+export const loadAddressesFromCSV = (): Promise<Set<string>> => {
+    return new Promise((resolve, _reject) => {
+        const dataFromCSV: Set<string> = new Set();
+        fs.createReadStream(path.resolve(__dirname, CONFIG.API.allowedAddressesCSV))
+            .pipe(parse({ delimiter: "," }))
+            .on("data", (csvrow: Array<string>) => {
+                if (isAddress(csvrow[0])) {
+                    dataFromCSV.add(csvrow[0]);
+                }
+            })
+            .on("end", () => {
+                console.log(`Found ${dataFromCSV.size} addresses in ${CONFIG.API.allowedAddressesCSV}.`);
+                resolve(dataFromCSV);
+            });
+    });
+};
+
+/// Helper function, to filter out all non-evm addresses
+export const filterAddresses = (): Promise<string[]> => {
+    return new Promise((resolve, _reject) => {
+        const dataFromCSV: string[] = [];
+        fs.createReadStream(path.resolve(__dirname, "./files/r.csv")) // files/name_of_file_to_filter.csv
+            .pipe(parse({ delimiter: "," }))
+            .on("data", (csvrow: Array<string>) => {
+                if (isAddress(csvrow[0])) {
+                    dataFromCSV.push(csvrow[0]);
+                }
+            })
+            .on("end", () => {
+                const file = fs.createWriteStream(path.resolve(__dirname, "./files/r_new.txt"), "utf-8");
+                dataFromCSV.forEach((v: string) => {
+                    // console.log(v);
+                    file.write(v + ",\n", "utf-8");
+                });
+                file.end();
+                resolve(dataFromCSV);
+            });
+    });
+};

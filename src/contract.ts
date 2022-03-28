@@ -1,8 +1,7 @@
-import assert from "assert";
 import fs from "fs";
 import Web3 from "web3";
 import type { AbiItem } from "web3-utils";
-import { isAddress, fromWei, stripHexPrefix } from "web3-utils";
+import { fromWei, stripHexPrefix } from "web3-utils";
 import type { Contract } from "web3-eth-contract";
 import path from "path";
 import { WMAIN_ID } from "./utils";
@@ -22,19 +21,15 @@ export type AssetsDetails = {
     minCNTInt?: string;
     minGWei?: string;
 };
-export class AllowedListContract {
+export class SidechainContract {
     web3!: Web3;
     bridgeContract!: Contract;
-    ingressContract!: Contract;
-    allowedListContract!: Contract; // it can be undefined at first, cause if constructor fails it will never be initialized
 
     constructor() {
         // Service should start the REST API even if there's problem with initialization of the contracts
         // Hence, we handle error if any appears and proceed
         try {
             this.web3 = new Web3(CONFIG.sidechain.nodeUrl);
-            const accountIngress = JSON.parse(fs.readFileSync(path.resolve(__dirname, CONFIG.sidechain.accountIngress), "utf-8"));
-            this.ingressContract = new this.web3.eth.Contract(accountIngress["abi"] as AbiItem[], CONFIG.sidechain.accountIngressAddress);
 
             const bridgeLogicPath = path.resolve(__dirname, CONFIG.sidechain.bridgeLogicContract);
             const bridgeProxyPath = path.resolve(__dirname, CONFIG.sidechain.bridgeProxyContract);
@@ -49,26 +44,11 @@ export class AllowedListContract {
         }
     }
 
-    public async initializeContract(): Promise<AllowedListContract> {
-        const accountRulesList = JSON.parse(fs.readFileSync(path.resolve(__dirname, CONFIG.sidechain.accountRulesList), "utf-8"));
-        const ruleContractName = await this.ingressContract.methods.RULES_CONTRACT().call();
-        const accountRulesAddress = await this.ingressContract.methods.getContractAddress(ruleContractName).call();
-
-        assert(isAddress(accountRulesAddress));
-        this.allowedListContract = new this.web3.eth.Contract(accountRulesList["abi"] as AbiItem[], accountRulesAddress);
+    public async initializeContract(): Promise<SidechainContract> {
+        const checkStargate = await this.getStargateAddress();
+        if (checkStargate instanceof Error) throw checkStargate;
         return this;
     }
-
-    public getAccountsList = async (): Promise<string[] | Error> => {
-        try {
-            const accounts = await this.allowedListContract.methods.getAccounts().call();
-            return accounts;
-        } catch (e) {
-            const error = e as Error;
-            console.error(error.message);
-            return new Error(`Contract not initialized properly. Details: ${error.message}`);
-        }
-    };
 
     public getStargateAddress = async (): Promise<string[] | Error> => {
         try {
@@ -151,4 +131,4 @@ export class AllowedListContract {
     };
 }
 
-export const contract = new AllowedListContract();
+export const contract = new SidechainContract();
