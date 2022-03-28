@@ -54,30 +54,9 @@ const fullAddressList = async (req: Request, res: Response): Promise<void> => {
 };
 
 const isAddressAllowed = async (req: Request, res: Response) => {
-    // TODO: Update config so node parses this env variable as a Boolean
-    if (CONFIG.API.enforceWhitelist === "TRUE") {
-        if (req.query.address == null || req.query.address.length === 0) {
-            res.send({
-                error: "Address not found. Please make sure that an address (string) is part of the request.",
-            });
-            return;
-        }
-        try {
-            const validAddresses = (await cacheManager.get(CacheKeys.FULL_ALLOWED_LIST)) as Set<string>;
-            const address: string = req.query.address as string;
-            const isAllowed = validAddresses.has(address);
-            res.send({
-                isAllowed,
-            });
-            return;
-        } catch (e) {
-            const err = e as Error;
-            console.log(`${err.name}, ${err.message}, ${err.stack}`);
-            res.status(400).send({ error: `Couldn't check validity of the address. ${err.message}` });
-        }
-    } else {
-        res.send({ isAllowed: true });
-    }
+    // TODO: remove the whole endpoint once frontend apps are adjusted.
+    // for now leaving the basic return just to make apps compatible, but open the gates for everyone
+    res.send({ isAllowed: true });
 };
 
 const stargate = async (req: Request, res: Response) => {
