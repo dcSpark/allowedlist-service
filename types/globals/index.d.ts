@@ -7,7 +7,6 @@ interface ConfigType {
     };
     API: {
         port: number;
-        enforceWhitelist: string;
         mainnet: string;
         cacheIntervalMs: number;
         allowedAddressesCSV: string;
