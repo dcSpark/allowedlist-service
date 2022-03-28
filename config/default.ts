@@ -7,8 +7,8 @@ export default {
     },
     API: {
         port: process.env.PORT || 3000,
-        enforceWhitelist: process.env.WHITELIST || "TRUE",
-        mainnet: process.env.MAINNET || "TRUE",
+        enforceWhitelist: process.env.WHITELIST || "FALSE",
+        mainnet: process.env.MAINNET || "FALSE",
         cacheIntervalMs: 3600000, // update cache every hour
         allowedAddressesCSV: "./files/allowed_addresses.csv",
     },
