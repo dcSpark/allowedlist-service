@@ -1,9 +1,3 @@
-config/**/*.js
-config/**/*.map
-
-src/**/*.js
-src/**/*.map
-
 # Logs
 logs
 *.log
