@@ -9,7 +9,7 @@ import type { TokensRegistry } from "./contract";
 import { contract } from "./contract";
 import type { CacheOption } from "./cache";
 import { CacheKeys, cacheManager } from "./cache";
-import type { MilkomedaStargateResponse } from "./types";
+import type { MilkomedaStargateResponse } from "../../shared/types";
 
 // eslint-disable-next-line
 const semverCompare = require("semver-compare");

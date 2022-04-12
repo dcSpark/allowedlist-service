@@ -5,7 +5,7 @@ import { fromWei, stripHexPrefix } from "web3-utils";
 import type { Contract } from "web3-eth-contract";
 import path from "path";
 import { WMAIN_ID } from "./utils";
-import type { MilkomedaStargateAsset } from "./types";
+import type { MilkomedaStargateAsset } from "../../shared/types";
 
 declare const CONFIG: ConfigType;
 
