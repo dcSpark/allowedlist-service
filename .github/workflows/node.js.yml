@@ -28,7 +28,7 @@ jobs:
         check-latest: false
         registry-url: https://registry.npmjs.org
         cache: 'npm'
-        cache-dependency-path: package-lock.json
+        cache-dependency-path: server/package-lock.json
     -
       name: Install dependencies
       run: |
