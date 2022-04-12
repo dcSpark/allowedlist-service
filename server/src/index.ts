@@ -9,6 +9,7 @@ import type { TokensRegistry } from "./contract";
 import { contract } from "./contract";
 import type { CacheOption } from "./cache";
 import { CacheKeys, cacheManager } from "./cache";
+import type { MilkomedaStargateResponse } from "./types";
 
 // eslint-disable-next-line
 const semverCompare = require("semver-compare");
@@ -64,7 +65,7 @@ const stargate = async (req: Request, res: Response) => {
         const stargateAddress = (await cacheManager.get(CacheKeys.STARGATE)) as string;
         const tokenRegistry = (await cacheManager.get(CacheKeys.TOKEN_REGISTRY)) as TokensRegistry;
 
-        res.send({
+        const response: MilkomedaStargateResponse = {
             current_address: stargateAddress,
             ttl_expiry: new Date().setHours(24, 0, 0, 0),
             ada: {
@@ -73,7 +74,8 @@ const stargate = async (req: Request, res: Response) => {
                 toADAFeeGWei: tokenRegistry.unwrappingFee,
             },
             assets: tokenRegistry.assets,
-        });
+        };
+        res.send(response);
         return;
     } catch (e) {
         const err = e as Error;

@@ -5,22 +5,17 @@ import { fromWei, stripHexPrefix } from "web3-utils";
 import type { Contract } from "web3-eth-contract";
 import path from "path";
 import { WMAIN_ID } from "./utils";
+import type { MilkomedaStargateAsset } from "./types";
 
 declare const CONFIG: ConfigType;
 
 export type TokensRegistry = {
     minLovelace: string;
-    assets: AssetsDetails[];
+    assets: MilkomedaStargateAsset[];
     wrappingFee: string;
     unwrappingFee: string;
 };
 
-export type AssetsDetails = {
-    idCardano: string;
-    idMilkomeda: string;
-    minCNTInt?: string;
-    minGWei?: string;
-};
 export class SidechainContract {
     web3!: Web3;
     bridgeContract!: Contract;
@@ -93,7 +88,7 @@ export class SidechainContract {
         const assets = await this.getAssetIds();
         if (assets instanceof Error) return assets;
 
-        let assetsDetails: AssetsDetails[] = [];
+        let assetsDetails: MilkomedaStargateAsset[] = [];
         let adaMinValue = "2000000"; // TODO: do we want to assume any default value for ada?
         for (let id of assets) {
             try {
