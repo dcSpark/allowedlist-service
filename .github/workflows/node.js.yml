@@ -32,6 +32,7 @@ jobs:
     -
       name: Install dependencies
       run: |
+        cd server
         npm cache verify
         npm ci --prefer-offline --no-audit --no-optional --ignore-scripts
 
