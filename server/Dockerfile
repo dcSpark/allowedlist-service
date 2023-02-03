@@ -1,26 +1,36 @@
-FROM node:14.17.6-alpine3.13
+FROM node:16.19.0-alpine AS x-builder
+RUN apk add --no-cache git
+ARG APP=/app
+#
+WORKDIR ${APP}/server
+COPY server/package*.json ./
+COPY server/tsconfig*.json ./
+RUN npm ci --package-lock --ignore-scripts
+#
+WORKDIR ${APP}/shared
+COPY shared ./
+#
+WORKDIR ${APP}/server
+COPY server/config ./config
+COPY server/contract ./contract
+COPY server/src ./src
+COPY server/types ./types
+COPY server/webpack.*.ts ./
+COPY server/files ./files
+ENV NODE_ENV=production
+RUN npm run build --ignore-scripts \
+    && npm ci --omit=dev --ignore-scripts
 
-#Install PM2
+###############################################
+
+FROM node:16.19.0-alpine as allowedlist-service
 RUN npm install pm2 -g
-
-# Create app directory
-WORKDIR /app
-
-RUN apk add git
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
-
-COPY . .
-
-RUN npm install
-RUN npm run build
-
-# If you are building your code for production
-# RUN npm ci --only=production
-
-#List the Directory Structure
-
-EXPOSE 8090
+#
+ARG APP=/app
+WORKDIR ${APP}
+COPY --from=x-builder ${APP}/server/build ./build
+COPY --from=x-builder ${APP}/server/node_modules ./node_modules
+COPY server/pm2.yaml ${APP}/
+#
+EXPOSE 3000
 CMD ["pm2-runtime", "--json", "pm2.yaml"]

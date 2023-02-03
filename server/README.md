@@ -38,6 +38,10 @@ Should return `{"isAllowed":true}`
 
 This will build to a container with the docker file. The container is using the PM2 runtime. You will need to pass ENV variables to the container to register with PM2 logging.
 
+```sh
+docker build -f Dockerfile -t dcspark/allowedlist-service ../
+```
+
 ## Tests
 
 =======
