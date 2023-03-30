@@ -3,7 +3,7 @@ import config from "config";
 import webpack from "webpack";
 import path from "path";
 import CopyPlugin from "copy-webpack-plugin";
-
+const Dotenv = require('dotenv-webpack');
 const { NODE_ENV = "production" } = process.env;
 
 module.exports = {
@@ -35,6 +35,7 @@ module.exports = {
                 },
             ],
         }),
+        new Dotenv({ systemvars: true }),
     ],
     module: {
         rules: [

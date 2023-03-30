@@ -5,7 +5,8 @@ ARG APP=/app
 WORKDIR ${APP}/server
 COPY server/package*.json ./
 COPY server/tsconfig*.json ./
-RUN npm ci --package-lock --ignore-scripts
+RUN npm install
+#RUN npm ci --package-lock --ignore-scripts
 #
 WORKDIR ${APP}/shared
 COPY shared ./
@@ -19,7 +20,8 @@ COPY server/webpack.*.ts ./
 COPY server/files ./files
 ENV NODE_ENV=production
 RUN npm run build --ignore-scripts \
-    && npm ci --omit=dev --ignore-scripts
+     && npm install
+#    && npm ci --omit=dev --ignore-scripts
 
 ###############################################
 

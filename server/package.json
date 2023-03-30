@@ -26,7 +26,8 @@
     "node-cache": "^5.1.2",
     "pm2": "^5.2.0",
     "semver-compare": "^1.0.0",
-    "web3": "^1.6.0"
+    "web3": "^1.6.0",
+    "dotenv-webpack": "^8.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.21",

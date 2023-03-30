@@ -110,6 +110,8 @@ const server = http.createServer(router);
 const port: number | string = process.env.PORT || CONFIG.API.port;
 
 console.log("mainnet: ", CONFIG.API.mainnet);
+console.log("port: ", CONFIG.API.port);
+console.log("nodeUrl: ", CONFIG.sidechain.nodeUrl);
 
 contract
     .initializeContract()
