@@ -24,16 +24,16 @@ export class SidechainContract {
         // Service should start the REST API even if there's problem with initialization of the contracts
         // Hence, we handle error if any appears and proceed
         try {
-            this.web3 = new Web3(CONFIG.sidechain.nodeUrl);
+            const chainID: number | string = process.env.BRIDGE_CONTRACT_CHAIN_ID || CONFIG.sidechain.chainId;
+            const nodeURL: string = process.env.CONTRACT_HOST || CONFIG.sidechain.nodeUrl;
+
+            this.web3 = new Web3(nodeURL);
 
             const bridgeLogicPath = path.resolve(__dirname, CONFIG.sidechain.bridgeLogicContract);
             const bridgeProxyPath = path.resolve(__dirname, CONFIG.sidechain.bridgeProxyContract);
             const bridgeLogic = JSON.parse(fs.readFileSync(bridgeLogicPath, "utf-8"));
             const bridgeProxy = JSON.parse(fs.readFileSync(bridgeProxyPath, "utf-8"));
-            this.bridgeContract = new this.web3.eth.Contract(
-                bridgeLogic["abi"] as AbiItem[],
-                bridgeProxy["networks"][CONFIG.sidechain.chainId]["address"]
-            );
+            this.bridgeContract = new this.web3.eth.Contract(bridgeLogic["abi"] as AbiItem[], bridgeProxy["networks"][chainID]["address"]);
         } catch (e) {
             console.error(e);
         }
