@@ -27,6 +27,9 @@ export class SidechainContract {
             const chainID: number | string = process.env.BRIDGE_CONTRACT_CHAIN_ID || CONFIG.sidechain.chainId;
             const nodeURL: string = process.env.CONTRACT_HOST || CONFIG.sidechain.nodeUrl;
 
+            console.log("chainID: ",chainID);
+            console.log("nodeURL: ",nodeURL);
+
             this.web3 = new Web3(nodeURL);
 
             const bridgeLogicPath = path.resolve(__dirname, CONFIG.sidechain.bridgeLogicContract);
