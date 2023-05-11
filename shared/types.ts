@@ -3,6 +3,7 @@ export type MilkomedaStargateAsset = {
   idMilkomeda: string; // ERC20 contract address
   minCNTInt?: string; // min amount of Cardano Native Token
   minGWei?: string; // optional - whatever GWei conversion is
+  cardanoFingerprint: string; // cardano fingerprint of the asset "asset.."
 };
 export type MilkomedaStargateResponse = {
   current_address: string;

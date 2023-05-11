@@ -2,13 +2,16 @@ import type { Router, Request, Response, NextFunction } from "express";
 import fs from "fs";
 import { parse } from "csv-parse";
 import path from "path";
-import { isAddress } from "web3-utils";
+import { isAddress, stripHexPrefix, isHexStrict } from "web3-utils";
+import AssetFingerprint from "@emurgo/cip14-js";
 
 declare const CONFIG: ConfigType;
 
 export const contentTypeHeaders = { headers: { "Content-Type": "application/json" } };
 
 export const errMsgs = { noValue: "no value" };
+
+const ASSET_INITIAL_BYTES = 40;
 
 type Wrapper = (router: Router) => void;
 
@@ -87,4 +90,22 @@ export const filterAddresses = (): Promise<string[]> => {
                 resolve(dataFromCSV);
             });
     });
+};
+
+export const convertToAssetId = (milkomedaAssetId: string): string => {
+    try {
+        if (milkomedaAssetId === WMAIN_ID) return "";
+
+        const assetId = isHexStrict(milkomedaAssetId) ? stripHexPrefix(milkomedaAssetId) : milkomedaAssetId;
+        // For Cardano we could just return the fingerprint, but some of the tokens doesn't have it on devnet indexer db,
+        // so we use CIP14 to create an asset it
+        const fingerprint = AssetFingerprint.fromHash(Buffer.from(assetId.substring(0, ASSET_INITIAL_BYTES), "hex")).fingerprint();
+
+        return fingerprint;
+    } catch (e) {
+        const err = e as Error;
+        console.error(err.message);
+
+        return "";
+    }
 };

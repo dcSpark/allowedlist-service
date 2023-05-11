@@ -4,7 +4,7 @@ import type { AbiItem } from "web3-utils";
 import { fromWei, stripHexPrefix } from "web3-utils";
 import type { Contract } from "web3-eth-contract";
 import path from "path";
-import { WMAIN_ID } from "./utils";
+import { WMAIN_ID, convertToAssetId } from "./utils";
 import type { MilkomedaStargateAsset } from "../../shared/types";
 
 declare const CONFIG: ConfigType;
@@ -103,6 +103,7 @@ export class SidechainContract {
                     assetsDetails.push({
                         idCardano: stripHexPrefix(id), // if 0x is there, then remove it
                         idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
+                        cardanoFingerprint: convertToAssetId(id),
                         minCNTInt: fromWei(details.minimumValue),
                         minGWei: fromWei(details.minimumValue, "Gwei"),
                     });
