@@ -6,7 +6,7 @@ export type MilkomedaStargateAsset = {
   cardanoFingerprint: string; // cardano fingerprint of the asset "asset.."
   cardanoDecimals?: number;
   milkomedaDecimals: number;
-  tokenName: string;
+  tokenSymbol: string;
 };
 export type MilkomedaStargateResponse = {
   current_address: string;

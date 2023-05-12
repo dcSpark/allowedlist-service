@@ -117,8 +117,8 @@ export class SidechainContract {
                         cardanoFingerprint: convertToAssetId(id),
                         minCNTInt: fromWei(details.minimumValue),
                         minGWei: fromWei(details.minimumValue, "Gwei"),
-                        milkomedaDecimals: sidechainDecimals,
-                        tokenName: tokenName as string,
+                        milkomedaDecimals: parseInt(sidechainDecimals, 10),
+                        tokenSymbol: tokenName as string,
                     });
                 }
             } catch (e) {
