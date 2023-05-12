@@ -94,6 +94,8 @@ const stargate = async (req: Request, res: Response) => {
                 minLovelace: tokenRegistry.minLovelace,
                 fromADAFeeLovelace: tokenRegistry.wrappingFee,
                 toADAFeeGWei: tokenRegistry.unwrappingFee,
+                cardanoDecimals: 6,
+                milkomedaDecimals: 18,
             },
             assets: tokenRegistry.assets,
         };
