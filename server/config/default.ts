@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 export default {
     sidechain: {
         nodeUrl: process.env.CONTRACT_HOST || "wss://rpc.c1.milkomeda.com:8546",
