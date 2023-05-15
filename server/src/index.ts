@@ -10,6 +10,7 @@ import { contract } from "./contract";
 import type { CacheOption } from "./cache";
 import { CacheKeys, cacheManager } from "./cache";
 import type { MilkomedaStargateResponse } from "../../shared/types";
+import { milkomedaNetworks } from "@dcspark/milkomeda-js-sdk";
 
 // eslint-disable-next-line
 const semverCompare = require("semver-compare");
@@ -60,18 +61,41 @@ const isAddressAllowed = async (req: Request, res: Response) => {
     res.send({ isAllowed: true });
 };
 
+const getSidechainContract = (): string => {
+    let sidechainContract = "";
+
+    // not sure how it's distinguished on the deployments side, so used process.env.MAINNET integrated in the config for now
+    switch (CONFIG.API.mainnet) {
+        case "TRUE": {
+            sidechainContract = milkomedaNetworks["c1-mainnet"].sidechainContract;
+            break;
+        }
+        case "FALSE": {
+            sidechainContract = milkomedaNetworks["c1-devnet"].sidechainContract;
+            break;
+        }
+        default: {
+            sidechainContract = "";
+        }
+    }
+    return sidechainContract;
+};
 const stargate = async (req: Request, res: Response) => {
     try {
         const stargateAddress = (await cacheManager.get(CacheKeys.STARGATE)) as string;
         const tokenRegistry = (await cacheManager.get(CacheKeys.TOKEN_REGISTRY)) as TokensRegistry;
+        const sidechainContract = getSidechainContract();
 
         const response: MilkomedaStargateResponse = {
             current_address: stargateAddress,
+            sidechain_address: sidechainContract,
             ttl_expiry: new Date().setHours(24, 0, 0, 0),
             ada: {
                 minLovelace: tokenRegistry.minLovelace,
                 fromADAFeeLovelace: tokenRegistry.wrappingFee,
                 toADAFeeGWei: tokenRegistry.unwrappingFee,
+                cardanoDecimals: 6,
+                milkomedaDecimals: 18,
             },
             assets: tokenRegistry.assets,
         };

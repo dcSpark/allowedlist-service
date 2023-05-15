@@ -4,7 +4,7 @@ import type { AbiItem } from "web3-utils";
 import { fromWei, stripHexPrefix } from "web3-utils";
 import type { Contract } from "web3-eth-contract";
 import path from "path";
-import { WMAIN_ID } from "./utils";
+import { WMAIN_ID, convertToAssetId } from "./utils";
 import type { MilkomedaStargateAsset } from "../../shared/types";
 
 declare const CONFIG: ConfigType;
@@ -19,6 +19,7 @@ export type TokensRegistry = {
 export class SidechainContract {
     web3!: Web3;
     bridgeContract!: Contract;
+    erc20Abi!: AbiItem[];
 
     constructor() {
         // Service should start the REST API even if there's problem with initialization of the contracts
@@ -34,6 +35,10 @@ export class SidechainContract {
                 bridgeLogic["abi"] as AbiItem[],
                 bridgeProxy["networks"][CONFIG.sidechain.chainId]["address"]
             );
+
+            const erc20AbiPath = path.resolve(__dirname, CONFIG.sidechain.erc20Contract);
+            const abiFile = JSON.parse(fs.readFileSync(erc20AbiPath, "utf-8"));
+            this.erc20Abi = abiFile["abi"] as AbiItem[];
         } catch (e) {
             console.error(e);
         }
@@ -94,17 +99,26 @@ export class SidechainContract {
             try {
                 const details = await this.bridgeContract.methods.tokenRegistry(id).call();
                 if (details instanceof Error) return details;
+                console.log(`Fetching details for ${details.tokenContract}`);
 
                 if (id === WMAIN_ID) {
                     // conversion to Lovelaces should appear only for WADA
                     adaMinValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
                 } else {
                     // if not WADA
+                    const erc20Contract = new this.web3.eth.Contract(this.erc20Abi, details.tokenContract);
+
+                    // we need to ask the following information from ERC20 contracts
+                    const sidechainDecimals = await erc20Contract.methods.decimals().call();
+                    const tokenName = await erc20Contract.methods.symbol().call();
                     assetsDetails.push({
                         idCardano: stripHexPrefix(id), // if 0x is there, then remove it
                         idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
+                        cardanoFingerprint: convertToAssetId(id),
                         minCNTInt: fromWei(details.minimumValue),
                         minGWei: fromWei(details.minimumValue, "Gwei"),
+                        milkomedaDecimals: parseInt(sidechainDecimals, 10),
+                        tokenSymbol: tokenName as string,
                     });
                 }
             } catch (e) {

@@ -4,6 +4,7 @@ export default {
         chainId: process.env.BRIDGE_CONTRACT_CHAIN_ID || 2001,
         bridgeProxyContract: "./contract/Proxy.json",
         bridgeLogicContract: "./contract/SidechainBridge.json",
+        erc20Contract: "./contract/ERC20.json",
     },
     API: {
         port: process.env.PORT || 3000,

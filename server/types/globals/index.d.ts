@@ -3,6 +3,7 @@ interface ConfigType {
         nodeUrl: string;
         bridgeProxyContract: string;
         bridgeLogicContract: string;
+        erc20Contract: string;
         chainId: number;
     };
     API: {
