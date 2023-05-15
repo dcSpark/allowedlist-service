@@ -143,6 +143,9 @@ contract
         // always start REST API
         server.listen(port, () => console.log(`listening on ${port}...`));
 
+        console.log(`MAINNET variable (process.env.MAINNET) is ${process.env.MAINNET}`);
+        console.log(`Loaded config properties are: ${JSON.stringify(CONFIG)}`);
+
         cacheManager
             .keepCached(injectForCaching, CONFIG.API.cacheIntervalMs)
             .then((_) => console.log("Cache updater initialized"))
