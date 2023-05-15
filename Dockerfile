@@ -4,15 +4,18 @@ FROM node:14.17.6-alpine3.13
 RUN npm install pm2 -g
 
 # Create app directory
-WORKDIR /app
 
-RUN apk add git
+COPY ./shared /shared
+COPY ./server /app
+
+WORKDIR /app
+RUN apk update && apk add git
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPY package*.json ./
+#COPY package*.json ./
 
-COPY . .
+#COPY . .
 
 RUN npm install
 RUN npm run build

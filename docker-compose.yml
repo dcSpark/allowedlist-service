@@ -1,0 +1,15 @@
+version: "3.9"
+
+services: 
+  allowedlist:
+    restart: always
+    image: dcspark/allowedlist-service:${ALLOWEDLIST_SERVICE_TAG:-0.0.7}
+    ports:
+      - ${PORT:-3000}:3000
+    environment:
+      - BRIDGE_CONTRACT_CHAIN_ID=${BRIDGE_CONTRACT_CHAIN_ID:-2001}
+      - CONTRACT_HOST=${CONTRACT_HOST:-https://rpc-mainnet-cardano-evm.c1.milkomeda.com}
+      - MAINNET=${MAINNET:-TRUE}
+    volumes:
+      - /opt/allowedlist-service/${NETWORK:-mainnet}/files:/app/build/files
+
