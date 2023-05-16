@@ -6,8 +6,7 @@ import type { Contract } from "web3-eth-contract";
 import path from "path";
 import { WMAIN_ID, convertToAssetId } from "./utils";
 import type { MilkomedaStargateAsset } from "../../shared/types";
-
-declare const CONFIG: ConfigType;
+import CONFIG from "../config/default";
 
 export type TokensRegistry = {
     minLovelace: string;

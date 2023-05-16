@@ -11,12 +11,10 @@ import type { CacheOption } from "./cache";
 import { CacheKeys, cacheManager } from "./cache";
 import type { MilkomedaStargateResponse } from "../../shared/types";
 import { milkomedaNetworks } from "@dcspark/milkomeda-js-sdk";
+import CONFIG from "../config/default";
 
 // eslint-disable-next-line
 const semverCompare = require("semver-compare");
-
-// populated by ConfigWebpackPlugin
-declare const CONFIG: ConfigType;
 
 /**
  * HTTP API interface
@@ -143,8 +141,15 @@ contract
         // always start REST API
         server.listen(port, () => console.log(`listening on ${port}...`));
 
-        console.log(`MAINNET variable (process.env.MAINNET) is ${process.env.MAINNET}`);
-        console.log(`Loaded config properties are: ${JSON.stringify(CONFIG)}`);
+        console.log("--------------------------------");
+        console.log(`CONFIG: ${JSON.stringify(CONFIG)}`);
+
+        console.log("--------------------------------");
+        console.log(`process.env.MAINNET is ${process.env.MAINNET}`);
+        console.log(`process.env.CONTRACT_HOST is ${process.env.CONTRACT_HOST}`);
+        console.log(`process.env.PORT is ${process.env.PORT}`);
+        console.log(`process.env.BRIDGE_CONTRACT_CHAIN_ID is ${process.env.BRIDGE_CONTRACT_CHAIN_ID}`);
+        console.log("--------------------------------");
 
         cacheManager
             .keepCached(injectForCaching, CONFIG.API.cacheIntervalMs)

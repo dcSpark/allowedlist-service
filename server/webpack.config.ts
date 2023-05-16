@@ -1,9 +1,9 @@
 import typescriptIsTransformer from "typescript-is/lib/transform-inline/transformer";
-import config from "config";
 import webpack from "webpack";
 import path from "path";
 import WebpackShellPluginNext from "webpack-shell-plugin-next";
 import CopyPlugin from "copy-webpack-plugin";
+import nodeExternals from "webpack-node-externals";
 
 const { NODE_ENV = "production" } = process.env;
 
@@ -19,8 +19,9 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js", ".json"],
     },
+    // exclude external modules from build process
+    externals: [nodeExternals({ allowlist: [/^dotenv/] })],
     plugins: [
-        new webpack.DefinePlugin({ CONFIG: JSON.stringify(config) }),
         new webpack.IgnorePlugin({
             resourceRegExp: /^electron$/,
         }),
