@@ -8,8 +8,6 @@ import { WMAIN_ID, convertToAssetId } from "./utils";
 import type { MilkomedaStargateAsset } from "../../shared/types";
 import CONFIG from "../config/default";
 
-// declare const CONFIG: ConfigType;
-
 export type TokensRegistry = {
     minLovelace: string;
     assets: MilkomedaStargateAsset[];

@@ -4,8 +4,7 @@ import { parse } from "csv-parse";
 import path from "path";
 import { isAddress, stripHexPrefix, isHexStrict } from "web3-utils";
 import AssetFingerprint from "@emurgo/cip14-js";
-
-declare const CONFIG: ConfigType;
+import CONFIG from "../../config/default";
 
 export const contentTypeHeaders = { headers: { "Content-Type": "application/json" } };
 
