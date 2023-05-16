@@ -5,6 +5,7 @@ import path from "path";
 import WebpackShellPluginNext from "webpack-shell-plugin-next";
 import CopyPlugin from "copy-webpack-plugin";
 import Dotenv from "dotenv-webpack";
+import nodeExternals from "webpack-node-externals";
 
 const { NODE_ENV = "production" } = process.env;
 
@@ -20,8 +21,10 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js", ".json"],
     },
+    // exclude external modules from build process
+    externals: [nodeExternals({ modulesDir: "./" })],
     plugins: [
-        new webpack.DefinePlugin({ CONFIG: JSON.stringify(config) }),
+        // new webpack.DefinePlugin({ CONFIG: JSON.stringify(config) }),
         new webpack.IgnorePlugin({
             resourceRegExp: /^electron$/,
         }),
@@ -44,7 +47,7 @@ module.exports = {
                 },
             ],
         }),
-        new Dotenv({ systemvars: true }),
+        // new Dotenv({ systemvars: true }),
     ],
     module: {
         rules: [
