@@ -100,7 +100,7 @@ const stargate = async (req: Request, res: Response) => {
                         wrappingFee: tokenRegistry.wrappingFee,
                         unwrappingFee: tokenRegistry.unwrappingFee,
                         algorandDecimals: 6,
-                        milkomedaDecimals: 6,
+                        milkomedaDecimals: 18,
                     },
                     assets: tokenRegistry.assets,
                 } as MilkomedaStargateA1Response;

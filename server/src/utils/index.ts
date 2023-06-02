@@ -108,3 +108,10 @@ export const convertToAssetId = (milkomedaAssetId: string): string => {
         return "";
     }
 };
+
+export const extractAlgorandAssetId = (assetId: string): string => {
+    const a1Prefix = "a5537";
+    const removedPrefix = assetId.replace(a1Prefix, "");
+    const removedZeros = removedPrefix.replace(/^0+/, "");
+    return removedZeros ?? assetId;
+  }
