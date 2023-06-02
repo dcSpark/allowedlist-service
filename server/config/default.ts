@@ -19,5 +19,6 @@ export default {
         mainnet: getEnv("MAINNET") || "FALSE",
         cacheIntervalMs: 1800000, // update cache every hour
         allowedAddressesCSV: "./files/allowed_addresses.csv",
+        milkomedaDeployment: getEnv("MILKOMEDA_DEPLOYMENT") || MilkomedaDeployment.C1
     },
 } as ConfigType;

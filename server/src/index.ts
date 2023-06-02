@@ -149,6 +149,7 @@ contract
         console.log(`process.env.CONTRACT_HOST is ${process.env.CONTRACT_HOST}`);
         console.log(`process.env.PORT is ${process.env.PORT}`);
         console.log(`process.env.BRIDGE_CONTRACT_CHAIN_ID is ${process.env.BRIDGE_CONTRACT_CHAIN_ID}`);
+        console.log(`process.env.MILKOMEDA_DEPLOYMENT is ${process.env.MILKOMEDA_DEPLOYMENT}`);
         console.log("--------------------------------");
 
         cacheManager
