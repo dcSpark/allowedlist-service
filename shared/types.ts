@@ -30,8 +30,8 @@ export type MilkomedaStargateA1Response = {
   ttl_expiry: number;
   algo: {
     minMicroAlgo: string;
-    fromAlgoFeeMicroAlgo: string;
-    toAlgoFeeGWei: string;
+    wrappingFee: string;
+    unwrappingFee: string;
     algorandDecimals: number;
     milkomedaDecimals: number;
   };

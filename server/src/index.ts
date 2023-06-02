@@ -61,22 +61,26 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 };
 
 const getSidechainContract = (): string => {
-    let sidechainContract = "";
 
-    switch (CONFIG.API.mainnet) {
-        case "TRUE": {
-            sidechainContract = milkomedaNetworks["c1-mainnet"].sidechainContract;
-            break;
-        }
-        case "FALSE": {
-            sidechainContract = milkomedaNetworks["c1-devnet"].sidechainContract;
-            break;
-        }
-        default: {
-            sidechainContract = "";
-        }
+    if (CONFIG.API.mainnet === "TRUE" && CONFIG.API.milkomedaDeployment === MilkomedaDeployment.C1) {
+        return  milkomedaNetworks["c1-mainnet"].sidechainContract;
     }
-    return sidechainContract;
+
+    if (CONFIG.API.mainnet === "FALSE" && CONFIG.API.milkomedaDeployment === MilkomedaDeployment.C1) {
+        return  milkomedaNetworks["c1-devnet"].sidechainContract;
+    }
+
+    if (CONFIG.API.mainnet === "TRUE" && CONFIG.API.milkomedaDeployment === MilkomedaDeployment.A1) {
+        // todo add address mapping here - for now add proxy for mainnet A1
+        return "0x000000000000000000000000000000000000bbbb"; 
+    }
+
+    if (CONFIG.API.mainnet === "FALSE" && CONFIG.API.milkomedaDeployment === MilkomedaDeployment.A1) {
+        // todo add address mapping here - for now add proxy for mainnet C1
+        return "0x000000000000000000000000000000000000bbbb";
+    }
+
+    return ""
 };
 const stargate = async (req: Request, res: Response) => {
     try {
@@ -93,10 +97,10 @@ const stargate = async (req: Request, res: Response) => {
                     ttl_expiry: new Date().setHours(24, 0, 0, 0),
                     algo: {
                         minMicroAlgo: tokenRegistry.minMainTokenValue,
-                        fromAlgoFeeMicroAlgo: tokenRegistry.wrappingFee,
-                        toAlgoFeeGWei: tokenRegistry.unwrappingFee,
+                        wrappingFee: tokenRegistry.wrappingFee,
+                        unwrappingFee: tokenRegistry.unwrappingFee,
                         algorandDecimals: 6,
-                        milkomedaDecimals: 18,
+                        milkomedaDecimals: 6,
                     },
                     assets: tokenRegistry.assets,
                 } as MilkomedaStargateA1Response;
