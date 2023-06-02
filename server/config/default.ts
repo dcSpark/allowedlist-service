@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { MilkomedaDeployment } from "../../shared/types";
 
 dotenv.config();
 

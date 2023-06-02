@@ -9,7 +9,7 @@ import type { MilkomedaStargateAsset } from "../../shared/types";
 import CONFIG from "../config/default";
 
 export type TokensRegistry = {
-    minLovelace: string;
+    minMainTokenValue: string;
     assets: MilkomedaStargateAsset[];
     wrappingFee: string;
     unwrappingFee: string;
@@ -129,7 +129,7 @@ export class SidechainContract {
         const toADAFeeGWei = await contract.getUnwrappingFee();
 
         const tokenRegistry: TokensRegistry = {
-            minLovelace: adaMinValue ?? "2000000",
+            minMainTokenValue: adaMinValue ?? "2000000",
             assets: assetsDetails,
             wrappingFee: fromADAFeeLovelace,
             unwrappingFee: toADAFeeGWei,

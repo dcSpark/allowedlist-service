@@ -15,9 +15,4 @@ interface ConfigType {
     };
 }
 
-enum MilkomedaDeployment {
-    A1 = "A1",
-    C1 = "C1"
-}
-
 declare module "copy-webpack-plugin";

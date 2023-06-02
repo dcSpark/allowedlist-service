@@ -8,7 +8,9 @@ export type MilkomedaStargateAsset = {
   milkomedaDecimals: number;
   tokenSymbol: string;
 };
-export type MilkomedaStargateResponse = {
+export type MilkomedaStargateResponse = MilkomedaStargateC1Response | MilkomedaStargateA1Response;
+
+export type MilkomedaStargateC1Response = {
   current_address: string;
   sidechain_address: string;
   ttl_expiry: number;
@@ -21,3 +23,22 @@ export type MilkomedaStargateResponse = {
   };
   assets: Array<MilkomedaStargateAsset>;
 };
+
+export type MilkomedaStargateA1Response = {
+  current_address: string;
+  sidechain_address: string;
+  ttl_expiry: number;
+  algo: {
+    minMicroAlgo: string;
+    fromAlgoFeeMicroAlgo: string;
+    toAlgoFeeGWei: string;
+    algorandDecimals: number;
+    milkomedaDecimals: number;
+  };
+  assets: Array<MilkomedaStargateAsset>;
+};
+
+export enum MilkomedaDeployment {
+  A1 = "A1",
+  C1 = "C1"
+}

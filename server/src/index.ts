@@ -9,7 +9,8 @@ import type { TokensRegistry } from "./contract";
 import { contract } from "./contract";
 import type { CacheOption } from "./cache";
 import { CacheKeys, cacheManager } from "./cache";
-import type { MilkomedaStargateResponse } from "../../shared/types";
+import type { MilkomedaStargateA1Response, MilkomedaStargateC1Response, MilkomedaStargateResponse } from "../../shared/types";
+import { MilkomedaDeployment } from "../../shared/types"
 import { milkomedaNetworks } from "@dcspark/milkomeda-js-sdk";
 import CONFIG from "../config/default";
 
@@ -62,7 +63,6 @@ const isAddressAllowed = async (req: Request, res: Response) => {
 const getSidechainContract = (): string => {
     let sidechainContract = "";
 
-    // not sure how it's distinguished on the deployments side, so used process.env.MAINNET integrated in the config for now
     switch (CONFIG.API.mainnet) {
         case "TRUE": {
             sidechainContract = milkomedaNetworks["c1-mainnet"].sidechainContract;
@@ -84,19 +84,45 @@ const stargate = async (req: Request, res: Response) => {
         const tokenRegistry = (await cacheManager.get(CacheKeys.TOKEN_REGISTRY)) as TokensRegistry;
         const sidechainContract = getSidechainContract();
 
-        const response: MilkomedaStargateResponse = {
-            current_address: stargateAddress,
-            sidechain_address: sidechainContract,
-            ttl_expiry: new Date().setHours(24, 0, 0, 0),
-            ada: {
-                minLovelace: tokenRegistry.minLovelace,
-                fromADAFeeLovelace: tokenRegistry.wrappingFee,
-                toADAFeeGWei: tokenRegistry.unwrappingFee,
-                cardanoDecimals: 6,
-                milkomedaDecimals: 18,
-            },
-            assets: tokenRegistry.assets,
-        };
+        let response: MilkomedaStargateResponse;
+        switch(CONFIG.API.milkomedaDeployment) {
+            case MilkomedaDeployment.A1: {
+                response = {
+                    current_address: stargateAddress,
+                    sidechain_address: sidechainContract,
+                    ttl_expiry: new Date().setHours(24, 0, 0, 0),
+                    algo: {
+                        minMicroAlgo: tokenRegistry.minMainTokenValue,
+                        fromAlgoFeeMicroAlgo: tokenRegistry.wrappingFee,
+                        toAlgoFeeGWei: tokenRegistry.unwrappingFee,
+                        algorandDecimals: 6,
+                        milkomedaDecimals: 18,
+                    },
+                    assets: tokenRegistry.assets,
+                } as MilkomedaStargateA1Response;
+                break;
+            }
+
+            // To make sure we keep current deployments set compatible, we set C1 as a default one as well as an option
+            // case MilkomedaDeployment.C1:
+            default: {
+                response = {
+                    current_address: stargateAddress,
+                    sidechain_address: sidechainContract,
+                    ttl_expiry: new Date().setHours(24, 0, 0, 0),
+                    ada: {
+                        minLovelace: tokenRegistry.minMainTokenValue,
+                        fromADAFeeLovelace: tokenRegistry.wrappingFee,
+                        toADAFeeGWei: tokenRegistry.unwrappingFee,
+                        cardanoDecimals: 6,
+                        milkomedaDecimals: 18,
+                    },
+                    assets: tokenRegistry.assets,
+                } as MilkomedaStargateC1Response;
+                break;
+            }
+        }
+
         res.send(response);
         return;
     } catch (e) {
