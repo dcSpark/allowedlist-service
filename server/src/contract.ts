@@ -4,10 +4,11 @@ import type { AbiItem } from "web3-utils";
 import { fromWei, stripHexPrefix } from "web3-utils";
 import type { Contract } from "web3-eth-contract";
 import path from "path";
-import { WMAIN_ID, convertToAssetId, extractAlgorandAssetId } from "./utils";
+import { WMAIN_ID, convertToAssetId, extractAlgorandAssetId, getAsaDecimals } from "./utils";
 import type { MilkomedaStargateAsset, MilkomedaStargateAssetA1, MilkomedaStargateAssetC1 } from "../../shared/types";
-import { MilkomedaDeployment } from "../../shared/types"
+import { MilkomedaDeployment } from "../../shared/types";
 import CONFIG from "../config/default";
+import algosdk from "algosdk";
 
 export type TokensRegistry = {
     minMainTokenValue: string;
@@ -128,12 +129,13 @@ export class SidechainContract {
                         } as MilkomedaStargateAssetC1);
                     }
                     if (CONFIG.API.milkomedaDeployment === MilkomedaDeployment.A1) {
+                        const algorandAssetId = extractAlgorandAssetId(stripHexPrefix(id));
+                        const algorandDecimals = await getAsaDecimals(algorandAssetId);
                         assetsDetails.push({
-                            idAlgorand: stripHexPrefix(id), // if 0x is there, then remove it
-                            idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
-                            algorandAssetId: extractAlgorandAssetId(stripHexPrefix(id)),
-                            minASAINT: fromWei(details.minimumValue),
-                            minGWei: fromWei(details.minimumValue, "Gwei"),
+                            idAlgorand: stripHexPrefix(id),
+                            idMilkomeda: stripHexPrefix(details.tokenContract),
+                            algorandAssetId,
+                            algorandDecimals,
                             milkomedaDecimals: parseInt(sidechainDecimals, 10),
                             tokenSymbol: tokenName as string,
                         } as MilkomedaStargateAssetA1);

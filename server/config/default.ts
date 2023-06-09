@@ -15,11 +15,15 @@ export default {
         bridgeLogicContract: "./contract/SidechainBridge.json",
         erc20Contract: "./contract/ERC20.json",
     },
+    mainchain: {
+        nodeUrl: getEnv("MAINCHAIN_NODE_URL"),
+        apiKey: getEnv("MAINCHAIN_NODE_API_KEY"),
+    },
     API: {
         port: getEnv("PORT") || 3000,
         mainnet: getEnv("MAINNET") || "FALSE",
         cacheIntervalMs: 1800000, // update cache every hour
         allowedAddressesCSV: "./files/allowed_addresses.csv",
-        milkomedaDeployment: getEnv("MILKOMEDA_DEPLOYMENT") || MilkomedaDeployment.C1
+        milkomedaDeployment: getEnv("MILKOMEDA_DEPLOYMENT") || MilkomedaDeployment.C1,
     },
 } as ConfigType;

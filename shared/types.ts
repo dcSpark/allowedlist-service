@@ -1,4 +1,6 @@
-export type MilkomedaStargateAsset = MilkomedaStargateAssetC1 | MilkomedaStargateAssetA1;
+export type MilkomedaStargateAsset =
+  | MilkomedaStargateAssetC1
+  | MilkomedaStargateAssetA1;
 
 export type MilkomedaStargateAssetC1 = {
   idCardano: string; // 0-right-padded fingerprint
@@ -14,14 +16,14 @@ export type MilkomedaStargateAssetC1 = {
 export type MilkomedaStargateAssetA1 = {
   idAlgorand: string; // MILKOMEDA_PREFIX-0s-ALGORAND-ASSET-ID
   idMilkomeda: string; // ERC20 contract address
-  minASAINT?: string; // min amount of Algorand Standard Asset
-  minGWei?: string; // optional - whatever GWei conversion is
   algorandAssetId: string; // ASA id
-  algorandDecimals?: number;
+  algorandDecimals?: number | undefined;
   milkomedaDecimals: number;
   tokenSymbol: string;
 };
-export type MilkomedaStargateResponse = MilkomedaStargateC1Response | MilkomedaStargateA1Response;
+export type MilkomedaStargateResponse =
+  | MilkomedaStargateC1Response
+  | MilkomedaStargateA1Response;
 
 export type MilkomedaStargateC1Response = {
   current_address: string;
@@ -53,5 +55,5 @@ export type MilkomedaStargateA1Response = {
 
 export enum MilkomedaDeployment {
   A1 = "A1",
-  C1 = "C1"
+  C1 = "C1",
 }
