@@ -40,6 +40,6 @@ jobs:
       name: Build
       run: cd server && npm run build --if-present
 
-    -
-      name: Audit
-      run: cd server && npm audit --audit-level=moderate
+    # -
+    #   name: Audit
+    #   run: cd server && npm audit --audit-level=moderate

@@ -6,11 +6,16 @@ interface ConfigType {
         erc20Contract: string;
         chainId: number;
     };
+    mainchain: {
+        nodeUrl: string;
+        apiKey: string;
+    };
     API: {
         port: number;
         mainnet: string;
         cacheIntervalMs: number;
         allowedAddressesCSV: string;
+        milkomedaDeployment: MilkomedaDeployment;
     };
 }
 

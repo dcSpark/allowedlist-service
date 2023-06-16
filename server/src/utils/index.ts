@@ -5,6 +5,7 @@ import path from "path";
 import { isAddress, stripHexPrefix, isHexStrict } from "web3-utils";
 import AssetFingerprint from "@emurgo/cip14-js";
 import CONFIG from "../../config/default";
+import algosdk from "algosdk";
 
 export const contentTypeHeaders = { headers: { "Content-Type": "application/json" } };
 
@@ -106,5 +107,28 @@ export const convertToAssetId = (milkomedaAssetId: string): string => {
         console.error(err.message);
 
         return "";
+    }
+};
+
+export const extractAlgorandAssetId = (assetId: string): string => {
+    const a1Prefix = "a5537";
+    const removedPrefix = assetId.replace(a1Prefix, "");
+    const removedZeros = removedPrefix.replace(/^0+/, "");
+    return removedZeros ?? assetId;
+};
+
+export const getAsaDecimals = async (algorandAssetId: string): Promise<number | undefined> => {
+    try {
+        const API_KEY = { "X-Algo-API-Token": CONFIG.mainchain.apiKey };
+
+        const algodClient = new algosdk.Algodv2(API_KEY, CONFIG.mainchain.nodeUrl, "");
+        const assetDetails = await algodClient.getAssetByID(Number(algorandAssetId)).do();
+        const decimals = assetDetails.params["decimals"];
+        if (decimals !== undefined) return Number(decimals);
+        return decimals;
+    } catch (e) {
+        const err = e as Error;
+        console.error(err.message);
+        return undefined;
     }
 };

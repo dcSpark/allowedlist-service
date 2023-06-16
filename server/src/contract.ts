@@ -4,12 +4,14 @@ import type { AbiItem } from "web3-utils";
 import { fromWei, stripHexPrefix } from "web3-utils";
 import type { Contract } from "web3-eth-contract";
 import path from "path";
-import { WMAIN_ID, convertToAssetId } from "./utils";
-import type { MilkomedaStargateAsset } from "../../shared/types";
+import { WMAIN_ID, convertToAssetId, extractAlgorandAssetId, getAsaDecimals } from "./utils";
+import type { MilkomedaStargateAsset, MilkomedaStargateAssetA1, MilkomedaStargateAssetC1 } from "../../shared/types";
+import { MilkomedaDeployment } from "../../shared/types";
 import CONFIG from "../config/default";
+import algosdk from "algosdk";
 
 export type TokensRegistry = {
-    minLovelace: string;
+    minMainTokenValue: string;
     assets: MilkomedaStargateAsset[];
     wrappingFee: string;
     unwrappingFee: string;
@@ -71,8 +73,12 @@ export class SidechainContract {
         }
     };
 
-    public getUnwrappingFee = async (): Promise<string> => {
+    public getUnwrappingFee = async (deployment: MilkomedaDeployment): Promise<string> => {
         try {
+            if (deployment === MilkomedaDeployment.A1) {
+                const unwrappingFee = await this.bridgeContract.methods.UNWRAPPING_FEE().call();
+                return fromWei(unwrappingFee, "micro");
+            }
             const unwrappingFee = await this.bridgeContract.methods.UNWRAPPING_FEE().call();
             return fromWei(unwrappingFee, "Gwei");
         } catch (e) {
@@ -93,7 +99,7 @@ export class SidechainContract {
         if (assets instanceof Error) return assets;
 
         let assetsDetails: MilkomedaStargateAsset[] = [];
-        let adaMinValue = "2000000"; // TODO: do we want to assume any default value for ada?
+        let minMainTokenValue;
         for (let id of assets) {
             try {
                 const details = await this.bridgeContract.methods.tokenRegistry(id).call();
@@ -101,8 +107,12 @@ export class SidechainContract {
                 console.log(`Fetching details for ${details.tokenContract}`);
 
                 if (id === WMAIN_ID) {
+                    // N
                     // conversion to Lovelaces should appear only for WADA
-                    adaMinValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
+                    // it satisfies value both for C1 and A1
+                    // 1 ADA = 1_000_000 lovelaces
+                    // 1 ALGO = 1_000_000 microAlgos
+                    minMainTokenValue = fromWei(details.minimumValue, "microether"); // gives back microether = lovelace (for main asset),
                 } else {
                     // if not WADA
                     const erc20Contract = new this.web3.eth.Contract(this.erc20Abi, details.tokenContract);
@@ -110,29 +120,44 @@ export class SidechainContract {
                     // we need to ask the following information from ERC20 contracts
                     const sidechainDecimals = await erc20Contract.methods.decimals().call();
                     const tokenName = await erc20Contract.methods.symbol().call();
-                    assetsDetails.push({
-                        idCardano: stripHexPrefix(id), // if 0x is there, then remove it
-                        idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
-                        cardanoFingerprint: convertToAssetId(id),
-                        minCNTInt: fromWei(details.minimumValue),
-                        minGWei: fromWei(details.minimumValue, "Gwei"),
-                        milkomedaDecimals: parseInt(sidechainDecimals, 10),
-                        tokenSymbol: tokenName as string,
-                    });
+
+                    if (CONFIG.API.milkomedaDeployment === MilkomedaDeployment.C1) {
+                        assetsDetails.push({
+                            idCardano: stripHexPrefix(id), // if 0x is there, then remove it
+                            idMilkomeda: stripHexPrefix(details.tokenContract), // if 0x is there, then remove it
+                            cardanoFingerprint: convertToAssetId(id),
+                            minCNTInt: fromWei(details.minimumValue),
+                            minGWei: fromWei(details.minimumValue, "Gwei"),
+                            milkomedaDecimals: parseInt(sidechainDecimals, 10),
+                            tokenSymbol: tokenName as string,
+                        } as MilkomedaStargateAssetC1);
+                    }
+                    if (CONFIG.API.milkomedaDeployment === MilkomedaDeployment.A1) {
+                        const algorandAssetId = extractAlgorandAssetId(stripHexPrefix(id));
+                        const algorandDecimals = await getAsaDecimals(algorandAssetId);
+                        assetsDetails.push({
+                            idAlgorand: stripHexPrefix(id),
+                            idMilkomeda: stripHexPrefix(details.tokenContract),
+                            algorandAssetId,
+                            algorandDecimals,
+                            milkomedaDecimals: parseInt(sidechainDecimals, 10),
+                            tokenSymbol: tokenName as string,
+                        } as MilkomedaStargateAssetA1);
+                    }
                 }
             } catch (e) {
                 console.error(e);
             }
         }
 
-        const fromADAFeeLovelace = await contract.getWrappingFee();
-        const toADAFeeGWei = await contract.getUnwrappingFee();
+        const wrappingFee = await contract.getWrappingFee();
+        const unwrappingFee = await contract.getUnwrappingFee(CONFIG.API.milkomedaDeployment);
 
         const tokenRegistry: TokensRegistry = {
-            minLovelace: adaMinValue ?? "2000000",
+            minMainTokenValue: minMainTokenValue ?? "2000000",
             assets: assetsDetails,
-            wrappingFee: fromADAFeeLovelace,
-            unwrappingFee: toADAFeeGWei,
+            wrappingFee,
+            unwrappingFee,
         };
 
         return tokenRegistry;
