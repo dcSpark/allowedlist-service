@@ -73,12 +73,8 @@ export class SidechainContract {
         }
     };
 
-    public getUnwrappingFee = async (deployment: MilkomedaDeployment): Promise<string> => {
+    public getUnwrappingFee = async (): Promise<string> => {
         try {
-            if (deployment === MilkomedaDeployment.A1) {
-                const unwrappingFee = await this.bridgeContract.methods.UNWRAPPING_FEE().call();
-                return fromWei(unwrappingFee, "micro");
-            }
             const unwrappingFee = await this.bridgeContract.methods.UNWRAPPING_FEE().call();
             return fromWei(unwrappingFee, "Gwei");
         } catch (e) {
@@ -151,7 +147,7 @@ export class SidechainContract {
         }
 
         const wrappingFee = await contract.getWrappingFee();
-        const unwrappingFee = await contract.getUnwrappingFee(CONFIG.API.milkomedaDeployment);
+        const unwrappingFee = await contract.getUnwrappingFee();
 
         const tokenRegistry: TokensRegistry = {
             minMainTokenValue: minMainTokenValue ?? "2000000",
